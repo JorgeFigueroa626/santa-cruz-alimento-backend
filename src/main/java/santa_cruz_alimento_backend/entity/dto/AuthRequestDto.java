@@ -1,0 +1,10 @@
+package santa_cruz_alimento_backend.entity.dto;
+
+import lombok.Data;
+
+@Data
+public class AuthRequestDto {
+    private String ci;
+
+    private String password;
+}

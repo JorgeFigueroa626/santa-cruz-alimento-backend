@@ -1,6 +1,8 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
+import santa_cruz_alimento_backend.entity.dto.IngredienteDTO;
+import santa_cruz_alimento_backend.entity.dto.IngredienteResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Category;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
 
@@ -13,7 +15,7 @@ public interface IIngredienteService {
 
     Ingrediente getById(Long id);
 
-    List<Ingrediente> findAll();
+    List<IngredienteResponseDTO> findAll();
 
     Ingrediente updateById(Long id, Ingrediente ingrediente);
 

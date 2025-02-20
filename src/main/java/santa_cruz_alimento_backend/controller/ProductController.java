@@ -6,11 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import santa_cruz_alimento_backend.entity.dto.ProductDto;
+import santa_cruz_alimento_backend.entity.dto.ProductoDto;
+import santa_cruz_alimento_backend.entity.model.Product;
 import santa_cruz_alimento_backend.service.interfaces.IProductService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 @RestController
 @RequestMapping(API)
@@ -19,7 +21,7 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
-    @PostMapping(PRODUCT)
+    //@PostMapping(PRODUCT)
     public ResponseEntity<?> save(@RequestBody ProductDto productDto) throws Exception{
         boolean success = productService.addProduct(productDto);
         if (success) {
@@ -29,6 +31,11 @@ public class ProductController {
         }
     }
 
+    @PostMapping(PRODUCTS)
+    public ResponseEntity<Product> create(@RequestBody ProductoDto dto) {
+        return ResponseEntity.ok(productService.createProducto(dto));
+    }
+
     @GetMapping(ALL_PRODUCT)
     public ResponseEntity<List<?>> findAll(){
         return ResponseEntity.ok(productService.findAllProduct());
@@ -36,7 +43,7 @@ public class ProductController {
 
     @GetMapping(BY_PRODUCT_ID)
     public ResponseEntity<?> getById(@PathVariable Long id){
-        ProductDto productDtoId = productService.getByProductById(id);
+        ProductoDto productDtoId = productService.getByProductById(id);
         if (productDtoId != null) {
             return ResponseEntity.ok(productDtoId);
         }else {
@@ -45,7 +52,7 @@ public class ProductController {
     }
 
     @PutMapping(BY_PRODUCT_ID)
-    public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody ProductDto productDto){
+    public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody ProductoDto productDto){
         try {
             boolean update = productService.updateProduct(id, productDto);
             if (update) {

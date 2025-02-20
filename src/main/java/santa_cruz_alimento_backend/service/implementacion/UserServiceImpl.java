@@ -26,6 +26,9 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private IRolRepository rolRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     @Override
     public UserDto createAdmin(SignupRequestDto requestDto) {
         User user = new User();
@@ -85,20 +88,20 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public boolean updateByUserId(Long id, SignupRequestDto requestDto) throws Exception {
-        Optional<User> optionalUser = userRepository.findById(id);
-        Optional<Rol> optionalRol = rolRepository.findById(requestDto.getRol_id());
-        if (optionalUser.isPresent()) {
-            User existUserid = optionalUser.get();
-            existUserid.setFullName(requestDto.getFull_name());
-            existUserid.setCi(requestDto.getCi());
-            existUserid.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
-            existUserid.setRol(optionalRol.get());
-            userRepository.save(existUserid);
-            return true;
-        }else {
-            return false;
-        }
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new Exception("Usuario con ID " + id + " no encontrado"));
 
+        Rol rol = rolRepository.findById(requestDto.getRol_id())
+                .orElseThrow(() -> new Exception("Rol con ID " + requestDto.getRol_id() + " no encontrado"));
+
+        user.setFullName(requestDto.getFull_name());
+        user.setCi(requestDto.getCi());
+        user.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
+        //user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setRol(rol);
+
+        userRepository.save(user);
+        return true;
     }
 
     @Override

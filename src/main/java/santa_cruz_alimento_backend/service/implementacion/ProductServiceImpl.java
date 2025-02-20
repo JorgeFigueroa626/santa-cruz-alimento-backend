@@ -3,12 +3,15 @@ package santa_cruz_alimento_backend.service.implementacion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import santa_cruz_alimento_backend.entity.dto.ProductDto;
+import santa_cruz_alimento_backend.entity.dto.ProductoDto;
 import santa_cruz_alimento_backend.entity.model.Business;
 import santa_cruz_alimento_backend.entity.model.Category;
 import santa_cruz_alimento_backend.entity.model.Product;
+import santa_cruz_alimento_backend.entity.model.Receta;
 import santa_cruz_alimento_backend.repository.IBusinessRepository;
 import santa_cruz_alimento_backend.repository.ICategoryRepository;
 import santa_cruz_alimento_backend.repository.IProductRepository;
+import santa_cruz_alimento_backend.repository.IRecetaRepository;
 import santa_cruz_alimento_backend.service.interfaces.IProductService;
 
 import java.io.IOException;
@@ -28,6 +31,32 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private IBusinessRepository businessRepository;
 
+    @Autowired
+    private IRecetaRepository recetaRepository;
+
+
+    @Override
+    public Product createProducto(ProductoDto dto) {
+        Product producto = new Product();
+        producto.setName(dto.getName());
+        producto.setDescription(dto.getDescription());
+        producto.setPrice(dto.getPrice());
+        producto.setProduction(dto.getProduction());
+
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+        producto.setCategory(category);
+
+        Business business = businessRepository.findById(dto.getBusinessId())
+                .orElseThrow(() -> new RuntimeException("Negocio no encontrada"));
+        producto.setBusiness(business);
+
+        Receta receta = recetaRepository.findById(dto.getRecetaId())
+                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+        producto.setReceta(receta);
+
+        return productRepository.save(producto);
+    }
 
     @Override
     public boolean addProduct(ProductDto productDto) throws IOException {
@@ -51,14 +80,15 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<ProductDto> findAllProduct() {
-        return productRepository.findAll().stream().map(Product::productDto).collect(Collectors.toList());
+    public List<ProductoDto> findAllProduct() {
+        return productRepository.findAll().stream().map(Product::productoDto).collect(Collectors.toList());
     }
 
     @Override
     public List<ProductDto> findAllProductByName(String name) {
         return List.of();
     }
+
 
     @Override
     public boolean deleteByProductId(Long id) {
@@ -72,30 +102,29 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public ProductDto getByProductById(Long id) {
+    public ProductoDto getByProductById(Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
         if (optionalProduct.isPresent()) {
-            return optionalProduct.get().productDto();
+            return optionalProduct.get().productoDto();
         }
         return null;
     }
 
     @Override
-    public boolean updateProduct(Long productId, ProductDto productDto) throws IOException {
-            Optional<Product> optionalProduct = productRepository.findById(productId);
-            Optional<Category> optionalCategory = categoryRepository.findById(productDto.getCategory_id());
-            Optional<Business> optionalBusiness = businessRepository.findById(productDto.getCategory_id());
-            if (optionalProduct.isPresent()) {
-                Product product = optionalProduct.get();
-                product.setName(productDto.getName());
-                product.setDescription(productDto.getDescription());
-                product.setPrice(productDto.getPrice());
-                product.setCategory(optionalCategory.get());
-                product.setBusiness(optionalBusiness.get());
-                productRepository.save(product);
-                return true;
-            }else {
-                return false;
-            }
+    public boolean updateProduct(Long productId, ProductoDto productDto) throws Exception {
+            Product optionalProduct = productRepository.findById(productId).orElseThrow(() -> new Exception("Producto con ID " + productId + " no encontrado"));
+            Category optionalCategory = categoryRepository.findById(productDto.getCategoryId()).orElseThrow(() -> new Exception("Categoria con ID " + productDto.getCategoryId() + " no encontrado"));
+            Business optionalBusiness = businessRepository.findById(productDto.getBusinessId()).orElseThrow(() -> new Exception("Negocio con ID " + productDto.getBusinessId() + " no encontrado"));
+            Receta optionalReceta = recetaRepository.findById(productDto.getRecetaId()).orElseThrow(() -> new Exception("Receta con ID " + productDto.getRecetaId() + " no encontrado"));
+
+            optionalProduct.setName(productDto.getName());
+            optionalProduct.setDescription(productDto.getDescription());
+            optionalProduct.setPrice(productDto.getPrice());
+            optionalProduct.setProduction(productDto.getProduction());
+            optionalProduct.setCategory(optionalCategory);
+            optionalProduct.setBusiness(optionalBusiness);
+            optionalProduct.setReceta(optionalReceta);
+            productRepository.save(optionalProduct);
+            return true;
     }
 }

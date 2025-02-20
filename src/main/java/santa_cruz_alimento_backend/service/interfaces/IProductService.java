@@ -2,6 +2,8 @@ package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
 import santa_cruz_alimento_backend.entity.dto.ProductDto;
+import santa_cruz_alimento_backend.entity.dto.ProductoDto;
+import santa_cruz_alimento_backend.entity.model.Product;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +13,7 @@ public interface IProductService {
 
     public boolean addProduct(ProductDto productDto) throws IOException;
 
-    public List<ProductDto> findAllProduct();
+    public List<ProductoDto> findAllProduct();
 
     public List<ProductDto> findAllProductByName(String name);
 
@@ -25,7 +27,9 @@ public interface IProductService {
 
     public boolean deleteByProductId(Long id);
 
-    public ProductDto getByProductById(Long productId);
+    public ProductoDto getByProductById(Long productId);
 
-    public boolean updateProduct(Long productId, ProductDto productDto) throws IOException;
+    public boolean updateProduct(Long productId, ProductoDto productDto) throws Exception;
+
+    Product createProducto(ProductoDto productoDto);
 }

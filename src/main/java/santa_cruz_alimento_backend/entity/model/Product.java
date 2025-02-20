@@ -6,7 +6,10 @@ import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import santa_cruz_alimento_backend.entity.dto.ProductDto;
+import santa_cruz_alimento_backend.entity.dto.ProductoDto;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,6 +27,8 @@ public class Product {
 
     private Integer price;
 
+    private Integer production;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -36,17 +41,22 @@ public class Product {
     @JsonIgnore
     private Business business;
 
-//    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
-//    private Set<Receta> receta;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "receta_id", referencedColumnName = "id")
+    private Receta receta; // ✅ Un Producto tiene UNA Receta
 
-    public ProductDto productDto(){
-        ProductDto productDto = new ProductDto();
+    public ProductoDto productoDto(){
+        ProductoDto productDto = new ProductoDto();
         productDto.setId(id);
         productDto.setName(name);
         productDto.setDescription(description);
         productDto.setPrice(price);
-        productDto.setCategory_id(category.getId());
-        productDto.setBusiness_id(business.getId());
+        productDto.setProduction(production);
+        productDto.setCategoryId(category.getId());
+        productDto.setBusinessId(business.getId());
+        productDto.setBusiness_name(business.getName());
+        productDto.setRecetaId(receta.getId());
+        productDto.setReceta_name(receta.getName());
         return productDto;
     }
 }

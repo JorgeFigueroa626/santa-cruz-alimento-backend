@@ -4,12 +4,14 @@ package santa_cruz_alimento_backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import santa_cruz_alimento_backend.entity.dto.IngredienteDTO;
+import santa_cruz_alimento_backend.entity.dto.IngredienteResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
 import santa_cruz_alimento_backend.service.interfaces.IIngredienteService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 
 @RestController
@@ -29,7 +31,7 @@ public class IngredienteController {
     }
 
     @GetMapping(BY_INGREDIENTE_ID)
-    public ResponseEntity<?> getById(@PathVariable Long id){
+    public ResponseEntity<Ingrediente> getById(@PathVariable Long id){
         try {
             return ResponseEntity.ok(ingredienteService.getById(id));
         }catch (Exception e){
@@ -38,7 +40,7 @@ public class IngredienteController {
     }
 
     @GetMapping(ALL_INGREDIENTE)
-    public ResponseEntity<List<?>> findAll(){
+    public ResponseEntity<List<IngredienteResponseDTO>> findAll(){
         try {
             return ResponseEntity.ok(ingredienteService.findAll());
         }catch (Exception e){

@@ -8,7 +8,7 @@ import santa_cruz_alimento_backend.service.interfaces.IBusinessService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 
 @RestController
@@ -44,5 +44,20 @@ public class BusinessController {
         }catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PutMapping(BY_BUSINESS_ID)
+    public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody Business business){
+        try {
+            return ResponseEntity.ok(businessService.updateById(id, business));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @DeleteMapping(BY_BUSINESS_ID)
+    public ResponseEntity<?> deleteById(@PathVariable Long id){
+        businessService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -8,7 +8,7 @@ import santa_cruz_alimento_backend.service.interfaces.IRolService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 @RestController
 @RequestMapping(API)

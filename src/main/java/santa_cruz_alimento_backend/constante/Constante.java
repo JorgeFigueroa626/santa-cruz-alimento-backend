@@ -1,4 +1,4 @@
-package santa_cruz_alimento_backend.Constante;
+package santa_cruz_alimento_backend.constante;
 
 public final class Constante {
 
@@ -43,8 +43,16 @@ public final class Constante {
     public static final String PRODUCT = "/product";
     public static final String ALL_PRODUCT = "/product";
     public static final String BY_PRODUCT_ID = "/product/{id}";
+    public static final String PRODUCTS = "/products";
 
     public static final String RECETA = "/receta";
     public static final String ALL_RECETA = "/receta";
     public static final String BY_RECETA_ID = "/receta/{id}";
+    public static final String BY_NAME_RECETA = "/receta/{nombre}/ingrediente";
+
+    public static final String RECETAS = "/recetas";
+
+    public static final String RECETA_INGREDIENTE = "/receta_ingrediente";
+    public static final String ALL_RECETA_INGREDIENTE = "/receta-ingrediente";
+    public static final String BY_RECETA_INGREDIENTE_ID = "/receta-ingrediente/{id}";
 }

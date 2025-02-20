@@ -12,7 +12,7 @@ import santa_cruz_alimento_backend.service.interfaces.IUserService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 @RestController
 @RequestMapping(API)
@@ -65,7 +65,7 @@ public class UserController {
         }
     }
 
-    @PostMapping(BY_USER_ID)
+    @PutMapping(BY_USER_ID)
     public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody SignupRequestDto requestDto) throws Exception{
         try {
             boolean update = userService.updateByUserId(id, requestDto);

@@ -25,7 +25,7 @@ import santa_cruz_alimento_backend.service.interfaces.IUserService;
 
 import java.util.Optional;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 @RestController
 @RequestMapping(AUTH)

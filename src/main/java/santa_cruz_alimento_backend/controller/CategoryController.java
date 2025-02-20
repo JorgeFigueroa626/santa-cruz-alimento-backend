@@ -8,7 +8,7 @@ import santa_cruz_alimento_backend.service.interfaces.ICategoryService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.Constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.Constante.*;
 
 
 @RestController

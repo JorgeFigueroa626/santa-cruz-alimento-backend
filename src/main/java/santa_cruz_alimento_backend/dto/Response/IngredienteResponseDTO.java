@@ -1,4 +1,4 @@
-package santa_cruz_alimento_backend.entity.dto;
+package santa_cruz_alimento_backend.dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class IngredienteResponseDTO {
     private Long id;
     private String name;
+    private Double cantidad;
+    private String unidad;
 }

@@ -5,12 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import santa_cruz_alimento_backend.entity.dto.ProductDto;
-import santa_cruz_alimento_backend.entity.dto.ProductoDto;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import santa_cruz_alimento_backend.dto.Response.ProductoResponseDTO;
 
 @Entity
 @Data
@@ -27,7 +22,7 @@ public class Product {
 
     private Integer price;
 
-    private Integer production;
+    private Integer stock;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
@@ -42,16 +37,16 @@ public class Product {
     private Business business;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "receta_id", referencedColumnName = "id")
+    @JoinColumn(name = "receta_id", referencedColumnName = "id", nullable = false)
     private Receta receta; // ✅ Un Producto tiene UNA Receta
 
-    public ProductoDto productoDto(){
-        ProductoDto productDto = new ProductoDto();
+    public ProductoResponseDTO productoDto(){
+        ProductoResponseDTO productDto = new ProductoResponseDTO();
         productDto.setId(id);
         productDto.setName(name);
         productDto.setDescription(description);
         productDto.setPrice(price);
-        productDto.setProduction(production);
+        productDto.setStock(stock);
         productDto.setCategoryId(category.getId());
         productDto.setBusinessId(business.getId());
         productDto.setBusiness_name(business.getName());

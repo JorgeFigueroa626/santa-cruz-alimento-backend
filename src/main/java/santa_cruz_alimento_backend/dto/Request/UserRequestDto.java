@@ -1,10 +1,11 @@
-package santa_cruz_alimento_backend.entity.dto;
+package santa_cruz_alimento_backend.dto.Request;
 
 import lombok.Data;
-import santa_cruz_alimento_backend.entity.model.Rol;
 
 @Data
-public class SignupRequestDto {
+public class UserRequestDto {
+
+    private Long id;
 
     private String full_name;
 
@@ -13,4 +14,6 @@ public class SignupRequestDto {
     private String password;
 
     private Long rol_id;
+
+    private Long rol_name;
 }

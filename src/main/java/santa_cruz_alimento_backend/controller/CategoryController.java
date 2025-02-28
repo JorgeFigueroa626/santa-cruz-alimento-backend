@@ -1,14 +1,16 @@
 package santa_cruz_alimento_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import santa_cruz_alimento_backend.entity.model.Category;
+import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.ICategoryService;
+import santa_cruz_alimento_backend.util.shared.JsonResult;
 
 import java.util.List;
 
 import static santa_cruz_alimento_backend.constante.Constante.*;
+import static santa_cruz_alimento_backend.util.shared.ReplyMessage.*;
 
 
 @RestController
@@ -19,48 +21,43 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @PostMapping(CATEGORY)
-    public ResponseEntity<?> save(@RequestBody Category category){
-        try {
-            return ResponseEntity.ok(categoryService.save(category));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult save(@RequestBody Category category) throws ExceptionNotFoundException {
+            Category save =  categoryService.save(category);
+            return new JsonResult(true, save, MESSAGE_SAVE);
     }
 
     @GetMapping(ALL_CATEGORY)
-    public ResponseEntity<List<?>> findAll(){
-        try {
-            return ResponseEntity.ok(categoryService.findAll());
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult findAll() throws ExceptionNotFoundException{
+        List<Category> categorys = categoryService.findAll();
+        return new JsonResult(true, categorys, MESSAGE_LIST);
     }
 
+    @GetMapping(ALL_CATEGORY_FILTERS)
+    public JsonResult getAllCategories(
+            @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(required = false) String text
+    ) throws ExceptionNotFoundException {
+        List<Category> category = categoryService.listarCategoriasConFiltros(text, page, size);
+        return new JsonResult(true, category, MESSAGE_LIST);
+    }
+
+
     @GetMapping(BY_CATEGORY_ID)
-    public ResponseEntity<?> getById(@PathVariable Long id){
-        try {
-            return ResponseEntity.ok(categoryService.getById(id));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult getById(@PathVariable Long id) throws ExceptionNotFoundException {
+        Category category = categoryService.getById(id);
+        return new JsonResult(true, category, MESSAGE_BY);
     }
 
     @PutMapping(BY_CATEGORY_ID)
-    public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody Category category){
-        try {
-            return ResponseEntity.ok(categoryService.updateById(id, category));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult updateById(@PathVariable Long id, @RequestBody Category category) throws ExceptionNotFoundException{
+        Category categoryUpdate = categoryService.updateById(id, category);
+        return new JsonResult(true, categoryUpdate, MESSAGE_UPDATE);
     }
 
     @DeleteMapping(BY_CATEGORY_ID)
-    public ResponseEntity<?> deleteById(@PathVariable Long id){
-        try {
-            categoryService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
+        categoryService.deleteById(id);
+        return new JsonResult(true, null, MESSAGE_DELETE);
     }
 }

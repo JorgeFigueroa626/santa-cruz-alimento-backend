@@ -3,12 +3,9 @@ package santa_cruz_alimento_backend.entity.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import santa_cruz_alimento_backend.entity.dto.IngredienteDTO;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -21,9 +18,14 @@ public class Ingrediente {
 
     private String name;
 
-//    private String unidad;
-//
-//    private Double stock;
+    private Double cantidad;
+
+    private String unidad;
+
+    @OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // ✅ Evita la serialización infinita
+    private List<DetalleCompra> detalleCompras= new ArrayList<>(); // Relación con la entidad DetalleCompra
+
 
     @OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // ✅ Evita la serialización infinita

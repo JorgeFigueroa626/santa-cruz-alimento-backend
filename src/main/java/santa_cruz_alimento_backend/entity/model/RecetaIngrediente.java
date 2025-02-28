@@ -14,12 +14,12 @@ public class RecetaIngrediente {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "receta_id")
+    @JoinColumn(name = "receta_id", nullable = false)
     @JsonBackReference // 🔥 Indica que esta es la parte "hija" de la relación
     private Receta receta;
 
     @ManyToOne
-    @JoinColumn(name = "ingrediente_id")
+    @JoinColumn(name = "ingrediente_id", nullable = false)
     private Ingrediente ingrediente;
 
     private Double cantidad;

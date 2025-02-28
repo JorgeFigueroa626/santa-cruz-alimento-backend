@@ -4,15 +4,18 @@ package santa_cruz_alimento_backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import santa_cruz_alimento_backend.entity.dto.IngredienteDTO;
-import santa_cruz_alimento_backend.entity.dto.IngredienteResponseDTO;
+import santa_cruz_alimento_backend.dto.Request.IngredienteRequestDTO;
+import santa_cruz_alimento_backend.dto.Response.IngredienteResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
+import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.IIngredienteService;
+import santa_cruz_alimento_backend.util.shared.JsonResult;
 
 import java.util.List;
 
 import static santa_cruz_alimento_backend.constante.Constante.*;
 
+import static santa_cruz_alimento_backend.util.shared.ReplyMessage.*;
 
 @RestController
 @RequestMapping(API)
@@ -22,48 +25,33 @@ public class IngredienteController {
     private IIngredienteService ingredienteService;
 
     @PostMapping(INGREDIENTE)
-    public ResponseEntity<?> save(@RequestBody Ingrediente ingrediente){
-        try {
-            return ResponseEntity.ok(ingredienteService.save(ingrediente));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult save(@RequestBody IngredienteRequestDTO ingrediente) throws ExceptionNotFoundException {
+        Ingrediente save = ingredienteService.save(ingrediente);
+        return new JsonResult(true, save, MESSAGE_SAVE);
+
     }
 
     @GetMapping(BY_INGREDIENTE_ID)
-    public ResponseEntity<Ingrediente> getById(@PathVariable Long id){
-        try {
-            return ResponseEntity.ok(ingredienteService.getById(id));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult getById(@PathVariable Long id) throws ExceptionNotFoundException{
+        Ingrediente ingrediente = ingredienteService.getById(id);
+        return new JsonResult(true, ingrediente, MESSAGE_BY);
     }
 
     @GetMapping(ALL_INGREDIENTE)
-    public ResponseEntity<List<IngredienteResponseDTO>> findAll(){
-        try {
-            return ResponseEntity.ok(ingredienteService.findAll());
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult findAll() throws ExceptionNotFoundException{
+        List<IngredienteResponseDTO> list = ingredienteService.findAll();
+        return  new JsonResult(true, list, MESSAGE_LIST);
     }
 
     @PutMapping(BY_INGREDIENTE_ID)
-    public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody Ingrediente ingrediente){
-        try {
-            return ResponseEntity.ok(ingredienteService.updateById(id, ingrediente));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult updateById(@PathVariable Long id, @RequestBody Ingrediente ingrediente) throws ExceptionNotFoundException{
+        Ingrediente update = ingredienteService.updateById(id, ingrediente);
+        return new JsonResult(true, update, MESSAGE_UPDATE);
     }
 
     @DeleteMapping(BY_INGREDIENTE_ID)
-    public ResponseEntity<?> deleteById(@PathVariable Long id){
-        try {
-            ingredienteService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
+        ingredienteService.deleteById(id);
+        return new JsonResult(true, null, MESSAGE_DELETE);
     }
 }

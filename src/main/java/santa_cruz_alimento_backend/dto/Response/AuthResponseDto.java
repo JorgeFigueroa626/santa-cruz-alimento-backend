@@ -1,4 +1,4 @@
-package santa_cruz_alimento_backend.entity.dto;
+package santa_cruz_alimento_backend.dto.Response;
 
 import lombok.Data;
 

@@ -1,18 +1,21 @@
 package santa_cruz_alimento_backend.entity.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import santa_cruz_alimento_backend.entity.dto.UserResponseDto;
+import santa_cruz_alimento_backend.dto.Response.UserResponseDto;
 
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "usuarios")
 public class User implements UserDetails {
 
@@ -30,6 +33,7 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "rol_id", referencedColumnName = "id", nullable = false)
     private Rol rol;
+
 
     public UserResponseDto userResponseDto(){
         UserResponseDto userResponse = new UserResponseDto();

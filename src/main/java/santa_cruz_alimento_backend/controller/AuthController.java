@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import santa_cruz_alimento_backend.entity.dto.AuthRequestDto;
-import santa_cruz_alimento_backend.entity.dto.AuthResponseDto;
-import santa_cruz_alimento_backend.entity.dto.SignupRequestDto;
-import santa_cruz_alimento_backend.entity.dto.UserDto;
+import santa_cruz_alimento_backend.dto.Request.AuthRequestDto;
+import santa_cruz_alimento_backend.dto.Response.AuthResponseDto;
+import santa_cruz_alimento_backend.dto.Request.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.Request.UserRequestDto;
 import santa_cruz_alimento_backend.entity.model.User;
 import santa_cruz_alimento_backend.repository.IUserRepository;
 import santa_cruz_alimento_backend.security.JWTUtil;
@@ -48,30 +48,18 @@ public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    @PostMapping(SIGNUP_ADMIN)
-    public ResponseEntity<?> registerAdmin(@RequestBody SignupRequestDto requestDto){
-        if (userService.verificationCI(requestDto.getCi())) {
-            return new ResponseEntity<>("Users already exist with thin CI", HttpStatus.NOT_ACCEPTABLE);
-        }
-        UserDto createUserDto = userService.createAdmin(requestDto);
-        if (createUserDto == null) {
-            return new ResponseEntity<>("User not create", HttpStatus.BAD_REQUEST);
-        }
-        return ResponseEntity.ok(createUserDto);
-    }
-
-    @PostMapping(SIGNUP)
+    @PostMapping(SIGNUP_USER)
     public ResponseEntity<?> registerUser(@RequestBody SignupRequestDto requestDto){
         logger.info("Solicitud recibida para crear usuario: {}", requestDto.getFull_name(), requestDto.getCi(), requestDto.getPassword(), requestDto.getRol_id());
         if (userService.verificationCI(requestDto.getCi())) {
             return new ResponseEntity<>("Users already exist with thin CI", HttpStatus.NOT_ACCEPTABLE);
         }
-        UserDto createUserDto = userService.createUser(requestDto);
-        if (createUserDto == null) {
+        UserRequestDto createUserRequestDto = userService.createUser(requestDto);
+        if (createUserRequestDto == null) {
             return new ResponseEntity<>("User not create", HttpStatus.BAD_REQUEST);
         }
-        logger.info("Usuario creado : {}", createUserDto);
-        return ResponseEntity.ok(createUserDto);
+        logger.info("Usuario creado : {}", createUserRequestDto);
+        return ResponseEntity.ok(createUserRequestDto);
     }
 
     @PostMapping(LOGIN)

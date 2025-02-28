@@ -20,10 +20,8 @@ public class Receta {
 
     private String name;
 
-    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Evita el ciclo al serializar
     private List<RecetaIngrediente> ingredientes = new ArrayList<>();
-
-
 
 }

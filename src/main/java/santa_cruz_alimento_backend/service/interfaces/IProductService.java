@@ -1,9 +1,11 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.entity.dto.ProductDto;
-import santa_cruz_alimento_backend.entity.dto.ProductoDto;
+import santa_cruz_alimento_backend.dto.ProductDto;
+import santa_cruz_alimento_backend.dto.Request.ProductoRequestDTO;
+import santa_cruz_alimento_backend.dto.Response.ProductoResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Product;
+import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,9 +14,6 @@ import java.util.List;
 public interface IProductService {
 
     public boolean addProduct(ProductDto productDto) throws IOException;
-
-    public List<ProductoDto> findAllProduct();
-
     public List<ProductDto> findAllProductByName(String name);
 
     /*
@@ -22,14 +21,16 @@ public interface IProductService {
     public List<ProductDto> getAllProductsByTitle(String name);
 
      */
-
     //public ProductDetailDto getProductDetailById(Long productId);
 
-    public boolean deleteByProductId(Long id);
+    ///
+    Product createProducto(ProductoRequestDTO productoRequestDTO) throws ExceptionNotFoundException;
 
-    public ProductoDto getByProductById(Long productId);
+    public List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException;
 
-    public boolean updateProduct(Long productId, ProductoDto productDto) throws Exception;
+    Product getByProductById(Long productId) throws ExceptionNotFoundException;
 
-    Product createProducto(ProductoDto productoDto);
+    Product updateProduct(Long productId, ProductoRequestDTO productDto) throws ExceptionNotFoundException, Exception;
+
+    public boolean deleteByProductId(Long id) throws ExceptionNotFoundException;
 }

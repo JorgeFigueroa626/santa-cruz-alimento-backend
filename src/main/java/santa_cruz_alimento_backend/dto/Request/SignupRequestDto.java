@@ -1,11 +1,9 @@
-package santa_cruz_alimento_backend.entity.dto;
+package santa_cruz_alimento_backend.dto.Request;
 
 import lombok.Data;
 
 @Data
-public class UserResponseDto {
-
-    private Long id;
+public class SignupRequestDto {
 
     private String full_name;
 
@@ -14,6 +12,4 @@ public class UserResponseDto {
     private String password;
 
     private Long rol_id;
-
-    private String rol_name;
 }

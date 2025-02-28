@@ -1,27 +1,29 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.entity.dto.SignupRequestDto;
-import santa_cruz_alimento_backend.entity.dto.UserDto;
-import santa_cruz_alimento_backend.entity.dto.UserResponseDto;
-import santa_cruz_alimento_backend.entity.model.User;
+import santa_cruz_alimento_backend.dto.Request.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.Request.UserRequestDto;
+import santa_cruz_alimento_backend.dto.Response.UserResponseDto;
+import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
 import java.util.List;
 
 @Service
 public interface IUserService {
 
-    UserDto createAdmin(SignupRequestDto requestDto);
+    UserRequestDto createAdmin(SignupRequestDto requestDto) throws ExceptionNotFoundException;
 
-    UserDto createUser(SignupRequestDto signupDto);
+    UserRequestDto createUser(SignupRequestDto signupDto) throws ExceptionNotFoundException;
 
-    boolean verificationCI(String ci);
+    boolean verificationCI(String ci) throws ExceptionNotFoundException;
 
-    List<UserResponseDto> findAll();
+    List<UserResponseDto> findAll() throws ExceptionNotFoundException;
 
-    UserResponseDto getByUserId(Long id);
+    //List<UserResponseDto> findAllFilters(String text, Integer page, Integer size) throws ExceptionNotFoundException;
 
-    boolean updateByUserId(Long id, SignupRequestDto requestDto) throws Exception;
+    UserResponseDto getByUserId(Long id) throws ExceptionNotFoundException;
 
-    void deleteById(Long id);
+    boolean updateByUserId(Long id, SignupRequestDto requestDto) throws ExceptionNotFoundException, Exception;
+
+    void deleteById(Long id)throws ExceptionNotFoundException;
 }

@@ -1,10 +1,9 @@
-package santa_cruz_alimento_backend.entity.dto;
+package santa_cruz_alimento_backend.dto.Response;
 
 import lombok.Data;
-import santa_cruz_alimento_backend.entity.model.Rol;
 
 @Data
-public class UserDto {
+public class UserResponseDto {
 
     private Long id;
 
@@ -16,5 +15,5 @@ public class UserDto {
 
     private Long rol_id;
 
-    private Long rol_name;
+    private String rol_name;
 }

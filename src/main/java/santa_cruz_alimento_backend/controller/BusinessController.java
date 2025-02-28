@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import santa_cruz_alimento_backend.entity.model.Business;
+import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.IBusinessService;
+import santa_cruz_alimento_backend.util.shared.JsonResult;
 
 import java.util.List;
 
 import static santa_cruz_alimento_backend.constante.Constante.*;
+import static santa_cruz_alimento_backend.util.shared.ReplyMessage.*;
 
 
 @RestController
@@ -20,44 +23,32 @@ public class BusinessController {
 
 
     @PostMapping(BUSINESS)
-    public ResponseEntity<?> save(@RequestBody Business business){
-        try {
-            return ResponseEntity.ok(businessService.save(business));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult save(@RequestBody Business business) throws ExceptionNotFoundException {
+        Business save = businessService.save(business);
+        return new JsonResult(true, save, MESSAGE_SAVE);
     }
 
     @GetMapping(BY_BUSINESS_ID)
-    public ResponseEntity<?> getById(@PathVariable Long id){
-        try {
-            return ResponseEntity.ok(businessService.getById(id));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult getById(@PathVariable Long id) throws ExceptionNotFoundException{
+        Business business = businessService.getById(id);
+        return new JsonResult(true, business, MESSAGE_BY);
     }
 
     @GetMapping(ALL_BUSINESS)
-    public ResponseEntity<List<?>> findAll(){
-        try {
-            return ResponseEntity.ok(businessService.findAll());
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult findAll() throws ExceptionNotFoundException{
+        List<Business> businesses = businessService.findAll();
+        return new JsonResult(true, businesses, MESSAGE_LIST);
     }
 
     @PutMapping(BY_BUSINESS_ID)
-    public ResponseEntity<?> updateById(@PathVariable Long id, @RequestBody Business business){
-        try {
-            return ResponseEntity.ok(businessService.updateById(id, business));
-        }catch (Exception e){
-            return ResponseEntity.badRequest().build();
-        }
+    public JsonResult updateById(@PathVariable Long id, @RequestBody Business business) throws ExceptionNotFoundException{
+        Business update =businessService.updateById(id, business);
+        return new JsonResult(true, update, MESSAGE_UPDATE);
     }
 
     @DeleteMapping(BY_BUSINESS_ID)
-    public ResponseEntity<?> deleteById(@PathVariable Long id){
-        businessService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public JsonResult deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
+         businessService.deleteById(id);
+        return new JsonResult(true, null, MESSAGE_DELETE);
     }
 }

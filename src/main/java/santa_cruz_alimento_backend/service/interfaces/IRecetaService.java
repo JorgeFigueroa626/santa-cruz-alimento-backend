@@ -1,9 +1,9 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Response.IngredienteDTO;
-import santa_cruz_alimento_backend.dto.Request.RecetaRequestDTO;
-import santa_cruz_alimento_backend.entity.model.Ingrediente;
+import santa_cruz_alimento_backend.dto.request.RecetaRequesDto;
+import santa_cruz_alimento_backend.dto.response.IngredientesResponseDto;
+import santa_cruz_alimento_backend.dto.response.RecetaResponseDto;
 import santa_cruz_alimento_backend.entity.model.Receta;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
@@ -16,17 +16,17 @@ public interface IRecetaService {
     boolean addReceta(Receta receta) throws IOException;
 
 
-    Receta createReceta(RecetaRequestDTO dto) throws ExceptionNotFoundException;
+    Receta createReceta(RecetaRequesDto dto) throws ExceptionNotFoundException;
 
-    List<Receta> findAll();
+    List<RecetaResponseDto> findAll();
 
-    List<Ingrediente> getIngredientesByNameReceta(String receta) throws ExceptionNotFoundException;
+    //List<Ingrediente> getIngredientesByNameReceta(String receta) throws ExceptionNotFoundException;
 
-    List<IngredienteDTO> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException;
+    List<IngredientesResponseDto> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException;
 
-    Receta getByRecetaId(Long id) throws ExceptionNotFoundException;
+    RecetaResponseDto getByRecetaId(Long id) throws ExceptionNotFoundException;
 
-    Receta updateById(Long id, RecetaRequestDTO recetaRequestDTO) throws ExceptionNotFoundException;
+    Receta updateById(Long id, RecetaRequesDto recetaRequestDTO) throws ExceptionNotFoundException;
 
     void deleteById(Long id) throws ExceptionNotFoundException;
 }

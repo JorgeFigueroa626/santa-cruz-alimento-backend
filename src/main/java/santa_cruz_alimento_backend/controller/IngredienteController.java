@@ -2,10 +2,9 @@ package santa_cruz_alimento_backend.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import santa_cruz_alimento_backend.dto.Request.IngredienteRequestDTO;
-import santa_cruz_alimento_backend.dto.Response.IngredienteResponseDTO;
+import santa_cruz_alimento_backend.dto.request.IngredienteRequestDTO;
+import santa_cruz_alimento_backend.dto.response.IngredientesResponseDto;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.IIngredienteService;
@@ -39,7 +38,7 @@ public class IngredienteController {
 
     @GetMapping(ALL_INGREDIENTE)
     public JsonResult findAll() throws ExceptionNotFoundException{
-        List<IngredienteResponseDTO> list = ingredienteService.findAll();
+        List<IngredientesResponseDto> list = ingredienteService.findAll();
         return  new JsonResult(true, list, MESSAGE_LIST);
     }
 

@@ -2,20 +2,16 @@ package santa_cruz_alimento_backend.service.implementacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Request.RecetaIngredienteDTO;
-import santa_cruz_alimento_backend.dto.Response.IngredienteDTO;
-import santa_cruz_alimento_backend.dto.Request.RecetaRequestDTO;
-import santa_cruz_alimento_backend.entity.model.Ingrediente;
-import santa_cruz_alimento_backend.entity.model.Receta;
-import santa_cruz_alimento_backend.entity.model.RecetaIngrediente;
+import santa_cruz_alimento_backend.dto.request.*;
+import santa_cruz_alimento_backend.dto.response.*;
+import santa_cruz_alimento_backend.entity.model.*;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
+import santa_cruz_alimento_backend.repository.IDetalleRecetasRepository;
 import santa_cruz_alimento_backend.repository.IIngredienteRepository;
-import santa_cruz_alimento_backend.repository.IRecetaIngredienteRepository;
 import santa_cruz_alimento_backend.repository.IRecetaRepository;
 import santa_cruz_alimento_backend.service.interfaces.IRecetaService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,7 +27,7 @@ public class RecetaServiceImpl implements IRecetaService {
     private IIngredienteRepository ingredienteRepository;
 
     @Autowired
-    private IRecetaIngredienteRepository recetaIngredienteRepository;
+    private IDetalleRecetasRepository detalleRecetasRepository;
 
     @Override
     public boolean addReceta(Receta recetaDto) throws IOException {
@@ -66,17 +62,17 @@ public class RecetaServiceImpl implements IRecetaService {
     }
 
     @Override
-    public Receta createReceta(RecetaRequestDTO recetaRequestDTO) throws ExceptionNotFoundException {
+    public Receta createReceta(RecetaRequesDto recetaRequestDTO) throws ExceptionNotFoundException {
         try {
 
             Receta receta = new Receta();
             receta.setName(recetaRequestDTO.getName());
 
-            List<RecetaIngrediente> ingredientes = recetaRequestDTO.getIngredientes().stream().map(iDto -> {
+            List<DetalleRecetas> detallesDto = recetaRequestDTO.getIngredientes().stream().map(iDto -> {
                 Ingrediente ingrediente = ingredienteRepository.findById(iDto.getIngredienteId())
                         .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado"));
 
-                RecetaIngrediente recetaIngrediente = new RecetaIngrediente();
+                DetalleRecetas recetaIngrediente = new DetalleRecetas();
                 recetaIngrediente.setIngrediente(ingrediente);
                 recetaIngrediente.setCantidad(iDto.getCantidad());
                 recetaIngrediente.setUnidad(iDto.getUnidad());
@@ -84,7 +80,7 @@ public class RecetaServiceImpl implements IRecetaService {
                 return recetaIngrediente;
             }).collect(Collectors.toList());
 
-            receta.setIngredientes(ingredientes);
+            receta.setDetalleRecetas(detallesDto);
 
             return recetaRepository.save(receta);
         }catch (Exception e){
@@ -93,9 +89,30 @@ public class RecetaServiceImpl implements IRecetaService {
     }
 
     @Override
-    public List<Receta> findAll() throws ExceptionNotFoundException {
+    public List<RecetaResponseDto> findAll() throws ExceptionNotFoundException {
         try {
-            return recetaRepository.findAll();
+            //return recetaRepository.findAll();
+            List<Receta> recetas = recetaRepository.findAll();
+
+            return recetas.stream().map(receta -> {
+                RecetaResponseDto dto = new RecetaResponseDto();
+                dto.setId(receta.getId());
+                dto.setName(receta.getName());
+
+                // Convertir detalles de receta a DTO
+                List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
+                    DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
+                    detalleDto.setId(detalle.getId());
+                    detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
+                    detalleDto.setCantidad(detalle.getCantidad());
+                    detalleDto.setUnidad(detalle.getUnidad());
+                    return detalleDto;
+                }).collect(Collectors.toList());
+
+                dto.setDetalleRecetas(detallesDto);
+
+                return dto;
+            }).collect(Collectors.toList());
 
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
@@ -103,43 +120,18 @@ public class RecetaServiceImpl implements IRecetaService {
     }
 
     @Override
-    public List<Ingrediente> getIngredientesByNameReceta(String nombreReceta) throws ExceptionNotFoundException {
+    public  List<IngredientesResponseDto> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException {
         try {
-
-            Receta receta = recetaRepository.findByName(nombreReceta).orElseThrow(() -> new ExceptionNotFoundException("Receta con nombre '" + nombreReceta + "' no encontrada"));;
-            return receta.getIngredientes().stream().map(RecetaIngrediente::getIngrediente).collect(Collectors.toList());
-        }catch (Exception e){
-            throw new ExceptionNotFoundException(e.getMessage());
-        }
-    }
-
-    @Override
-    public  List<IngredienteDTO> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException {
-//        Receta receta = recetaRepository.findByName(nombreReceta)
-//                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
-//
-//        List<IngredienteDTO> ingredientesDTO = receta.getIngredientes().stream()
-//                .map(ri -> new IngredienteDTO(
-//                        ri.getIngrediente().getName(),
-//                        ri.getUnidad(),
-//                        ri.getCantidad()))
-//                .collect(Collectors.toList());
-//
-//        RecetaRespDTO recetaDTO = new RecetaRespDTO();
-//        recetaDTO.setName(receta.getName());
-//        recetaDTO.setIngredientes(ingredientesDTO);
-//        return recetaDTO;
-        try {
-
             Receta receta = recetaRepository.findByName(nombreReceta)
                     .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada"));
 
-            return receta.getIngredientes().stream()
-                    .map(ri -> new IngredienteDTO(
+            return receta.getDetalleRecetas().stream()
+                    .map(ri -> new IngredientesResponseDto(
                             ri.getId(),
                             ri.getIngrediente().getName(),
-                            ri.getUnidad(),
-                            ri.getCantidad()))
+                            ri.getCantidad(),
+                            ri.getUnidad()
+                            ))
                     .collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
@@ -148,12 +140,36 @@ public class RecetaServiceImpl implements IRecetaService {
 
 
     @Override
-    public Receta getByRecetaId(Long id) throws ExceptionNotFoundException {
-        return recetaRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrado con id: " + id));
+    public RecetaResponseDto getByRecetaId(Long id) throws ExceptionNotFoundException {
+        try {
+            Receta receta = recetaRepository.findById(id)
+                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada con ID: " + id));
+
+            RecetaResponseDto dto = new RecetaResponseDto();
+            dto.setId(receta.getId());
+            dto.setName(receta.getName());
+
+            // Convertir detalles de recera a DTO
+            List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
+                DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
+                detalleDto.setId(detalle.getId());
+                detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
+                detalleDto.setCantidad(detalle.getCantidad());
+                detalleDto.setUnidad(detalle.getUnidad());
+                return detalleDto;
+            }).collect(Collectors.toList());
+
+            dto.setDetalleRecetas(detallesDto);
+
+            return dto;
+        }catch (Exception e){
+            throw new ExceptionNotFoundException(e.getMessage());
+        }
+        //return recetaRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrado con id: " + id));
     }
 
     @Override
-    public Receta updateById(Long recetaId, RecetaRequestDTO recetaRequestDTO) throws ExceptionNotFoundException {
+    public Receta updateById(Long recetaId, RecetaRequesDto recetaRequestDTO) throws ExceptionNotFoundException {
         try {
             // Buscar la receta existente
             Receta receta = recetaRepository.findById(recetaId)
@@ -163,23 +179,23 @@ public class RecetaServiceImpl implements IRecetaService {
             receta.setName(recetaRequestDTO.getName());
 
             // Lista de ingredientes actuales en la base de datos
-            List<RecetaIngrediente> ingredientesActuales = receta.getIngredientes();
+            List<DetalleRecetas> ingredientesActuales = receta.getDetalleRecetas();
 
             // Lista de IDs de ingredientes que vienen en la solicitud
             Set<Long> nuevosIds = recetaRequestDTO.getIngredientes().stream()
-                    .map(RecetaIngredienteDTO::getIngredienteId)
+                    .map(DetalleRecetasRequestDto::getIngredienteId)
                     .collect(Collectors.toSet());
 
             // **1️⃣ Eliminar ingredientes que ya no están en la lista**
             ingredientesActuales.removeIf(ri -> !nuevosIds.contains(ri.getIngrediente().getId()));
 
             // **2️⃣ Agregar o actualizar ingredientes**
-            for (RecetaIngredienteDTO iDto : recetaRequestDTO.getIngredientes()) {
+            for (DetalleRecetasRequestDto iDto : recetaRequestDTO.getIngredientes()) {
                 Ingrediente ingrediente = ingredienteRepository.findById(iDto.getIngredienteId())
-                        .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado"));
+                        .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con el ID : " + iDto.getIngredienteId()));
 
                 // Buscar si el ingrediente ya existe en la receta
-                Optional<RecetaIngrediente> existente = ingredientesActuales.stream()
+                Optional<DetalleRecetas> existente = ingredientesActuales.stream()
                         .filter(ri -> ri.getIngrediente().getId().equals(ingrediente.getId()))
                         .findFirst();
 
@@ -189,7 +205,7 @@ public class RecetaServiceImpl implements IRecetaService {
                     existente.get().setUnidad(iDto.getUnidad());
                 } else {
                     // **Agregar nuevo ingrediente si no está en la lista**
-                    RecetaIngrediente nuevoRI = new RecetaIngrediente();
+                    DetalleRecetas nuevoRI = new DetalleRecetas();
                     nuevoRI.setReceta(receta);
                     nuevoRI.setIngrediente(ingrediente);
                     nuevoRI.setCantidad(iDto.getCantidad());
@@ -199,7 +215,7 @@ public class RecetaServiceImpl implements IRecetaService {
             }
 
             // Guardar la receta con los ingredientes actualizados
-            receta.setIngredientes(ingredientesActuales);
+            receta.setDetalleRecetas(ingredientesActuales);
             return recetaRepository.save(receta);
 
         } catch (Exception e) {

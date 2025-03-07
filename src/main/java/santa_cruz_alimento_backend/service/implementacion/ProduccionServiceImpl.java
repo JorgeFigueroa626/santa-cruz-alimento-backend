@@ -2,7 +2,11 @@ package santa_cruz_alimento_backend.service.implementacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Response.ProduccionResponseDTO;
+import santa_cruz_alimento_backend.dto.request.ProduccionRequestDto;
+import santa_cruz_alimento_backend.dto.response.DetalleProduccionResponseDto;
+import santa_cruz_alimento_backend.dto.response.DetalleRecetaResponseDto;
+import santa_cruz_alimento_backend.dto.response.ProduccionResponseDTO;
+import santa_cruz_alimento_backend.dto.response.RecetaResponseDto;
 import santa_cruz_alimento_backend.entity.model.*;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IIngredienteRepository;
@@ -43,14 +47,37 @@ public class ProduccionServiceImpl implements IProduccionService {
                     .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
 
             // Crear nueva lista de ingredientes ajustada
-            List<ProduccionIngrediente> ingredientesAjustados = receta.getIngredientes().stream()
+            List<DetalleProduccion> ingredientesAjustados = receta.getDetalleRecetas().stream()
                     .map(ri -> {
-                        ProduccionIngrediente nuevoPI = new ProduccionIngrediente();
+
+                        Ingrediente ingrediente = ingredienteRepository.findById(ri.getIngrediente().getId())
+                                .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado"));
+
+                        DetalleProduccion nuevoPI = new DetalleProduccion();
                         nuevoPI.setId(ri.getId());
                         //nuevoPI.setProduccion();
                         nuevoPI.setIngrediente(ri.getIngrediente());
                         nuevoPI.setUnidad(ri.getUnidad());
                         double nuevaCantidad = (produccion_total / producto.getStock()) * ri.getCantidad();
+
+                        if (nuevaCantidad > ingrediente.getCantidad()){
+                            String mensaje = new StringBuilder()
+                                    .append("¡Cantidad del Ingrediente ").append("'" + ingrediente.getName() + "'")
+                                    .append(" = ").append(ingrediente.getCantidad())
+                                    .append(" " + ingrediente.getUnidad())
+                                    .append("¡ !INSUFICIENTE!\n")
+                                    .append(" !Se requiere para la Producción una cantidad mayor a ")
+                                    .append(nuevaCantidad)
+                                    .append(" ")
+                                    .append(ingrediente.getUnidad()+"!")
+                                    .toString();
+
+                            throw new ExceptionNotFoundException(mensaje);
+                        }else {
+                            //ingrediente.setCantidad(ingrediente.getCantidad() - nuevaCantidad);
+                            System.out.print(" Inventario del ingrediente " + ingrediente.getName() + " = ( " + ingrediente.getCantidad() + " - " +  nuevaCantidad + " ); ");
+                        }
+
                         nuevoPI.setCantidad(nuevaCantidad);
                         return nuevoPI;
                     })
@@ -60,11 +87,11 @@ public class ProduccionServiceImpl implements IProduccionService {
             Produccion produccion = new Produccion();
             produccion.setId(produccion.getId());
             produccion.setSolicitud_produccion(produccion_total);
-            produccion.setProducido(produccion.getProducido());
-            produccion.setComentario(produccion.getComentario());
+            //produccion.setProducido(produccion.getProducido());
+            //produccion.setComentario(produccion.getComentario());
             produccion.setFechaProduccion(new Timestamp(System.currentTimeMillis()));
             produccion.setProducto(producto); // Relacionar con el producto
-            produccion.setIngredientes(ingredientesAjustados);
+            produccion.setDetalleProduccions(ingredientesAjustados);
 
             return produccion;
         }catch (Exception e){
@@ -86,31 +113,36 @@ public class ProduccionServiceImpl implements IProduccionService {
 
             // Crear una nueva instancia de Produccion
             Produccion produccion = new Produccion();
-            produccion.setSolicitud_produccion(solicitud_producion);
-            produccion.setProducido((int) solicitud_producion);  // Inicialmente en 0
-            produccion.setComentario("Nueva producción registrada");
-            produccion.setFechaProduccion(new Timestamp(System.currentTimeMillis()));
-            produccion.setProducto(producto); // Relacionar con el producto
+
 
             // Crear nueva lista de ingredientes ajustada
-            List<ProduccionIngrediente> ingredientesAjustados = receta.getIngredientes().stream()
+            List<DetalleProduccion> ingredientesAjustados = receta.getDetalleRecetas().stream()
                     .map(ri -> {
 
                     Ingrediente ingrediente = ingredienteRepository.findById(ri.getIngrediente().getId())
                             .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado"));
 
-                        ProduccionIngrediente nuevoPI = new ProduccionIngrediente();
+                        DetalleProduccion nuevoPI = new DetalleProduccion();
                         nuevoPI.setIngrediente(ri.getIngrediente());
                         nuevoPI.setUnidad(ri.getUnidad());
                         double nuevaCantidad = (solicitud_producion / producto.getStock()) * ri.getCantidad();
 
-                        if (ingrediente.getCantidad() >= nuevaCantidad){
-                            /*ingrediente.setCantidad(ingrediente.getCantidad() - ri.getCantidad());
-                            ingrediente.setCantidad(ingrediente.getCantidad() - nuevoPI.getCantidad());*/
-                            ingrediente.setCantidad(ingrediente.getCantidad() - nuevaCantidad);
-                        }else {
-                            throw new ExceptionNotFoundException("¡Cantidad de Ingrediente Insuficiente!, Para la Produccion");
+                        if (nuevaCantidad > ingrediente.getCantidad()){
+                            String mensaje = new StringBuilder()
+                                    .append("¡Cantidad del Ingrediente ").append("'" + ingrediente.getName() + "'")
+                                    .append(" con ").append(ingrediente.getCantidad())
+                                    .append(" " + ingrediente.getUnidad())
+                                    .append("¡ !INSUFICIENTE! \n")
+                                    .append("!Se requiere para la Producción una cantidad mayor a ")
+                                    .append(nuevaCantidad)
+                                    .append(" ")
+                                    .append(ingrediente.getUnidad())
+                                    .append("!")
+                                    .toString();
 
+                            throw new ExceptionNotFoundException(mensaje);
+                        }else {
+                            ingrediente.setCantidad(ingrediente.getCantidad() - nuevaCantidad);
                         }
 
                         nuevoPI.setCantidad(nuevaCantidad);
@@ -121,8 +153,16 @@ public class ProduccionServiceImpl implements IProduccionService {
                     })
                     .collect(Collectors.toList());
 
+            produccion.setSolicitud_produccion(solicitud_producion);
+            produccion.setProducido((int) solicitud_producion);  // Inicialmente en 0
+            produccion.setComentario("Nueva producción registrada. Observaciones?");
+            produccion.setFechaProduccion(new Timestamp(System.currentTimeMillis()));
+            produccion.setProducto(producto); // Relacionar con el producto
+
+            //producto.setStock((int) (producto.getStock() + solicitud_producion));
+
             // Asignar ingredientes ajustados a la producción
-            produccion.setIngredientes(ingredientesAjustados);
+            produccion.setDetalleProduccions(ingredientesAjustados);
 
             // Guardar la producción y en cascada los ingredientes
             return produccionRepository.save(produccion);
@@ -131,50 +171,28 @@ public class ProduccionServiceImpl implements IProduccionService {
         }
     }
 
-//    @Override
-//    public Produccion editarProduccionById(Long produccionId, Produccion produccionActualizada) {
-//        // Buscar la producción existente
-//        Produccion produccion = produccionRepository.findById(produccionId)
-//                .orElseThrow(() -> new RuntimeException("Producción no encontrada"));
-//
-//        // Obtener el producto asociado
-//        Product producto = produccion.getProducto();
-//
-//        // Obtener la receta asociada al producto
-//        Receta receta = recetaRepository.findById(producto.getReceta().getId())
-//                .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
-//
-//        // Actualizar la lista de ingredientes ajustados según la receta
-//        List<ProduccionIngrediente> ingredientesAjustados = receta.getIngredientes().stream()
-//                .map(ri -> {
-//                    ProduccionIngrediente nuevoPI = new ProduccionIngrediente();
-//                    nuevoPI.setIngrediente(ri.getIngrediente());
-//                    nuevoPI.setUnidad(ri.getUnidad());
-//                    nuevoPI.setCantidad(ri.getCantidad()); // Mantiene la cantidad original de la receta
-//                    return nuevoPI;
-//                })
-//                .collect(Collectors.toList());
-//
-//        // Actualizar la producción existente con los nuevos valores
-//        produccion.setSolicitud_produccion(produccionActualizada.getSolicitud_produccion());
-//        produccion.setProducido(produccionActualizada.getProducido());
-//        produccion.setComentario(produccionActualizada.getComentario());
-//        produccion.setIngredientes(ingredientesAjustados);
-//
-//        return produccionRepository.save(produccion);
-//    }
-
     @Override
-    public Produccion editarProduccionById(Long produccionId, Produccion produccion) {
-        // Buscar la producción existente
-        Produccion produccionExistente = produccionRepository.findById(produccionId)
-                .orElseThrow(() -> new RuntimeException("Producción no encontrada"));
+    public Produccion editarProduccionById(Long produccionId, ProduccionRequestDto produccion) {
+        try {
 
-        // Actualizar los campos de la producción existente con los nuevos valores
-        produccionExistente.setSolicitud_produccion(produccion.getSolicitud_produccion());
-        produccionExistente.setProducido(produccion.getProducido());  // Actualizar producido si es necesario
-        produccionExistente.setComentario(produccion.getComentario()); // Actualizar comentario
-        produccionExistente.setProducto(produccion.getProducto()); // Relacionar nuevamente con el producto
+            // Buscar el producto
+            Product producto = productoRepository.findById(produccion.getProductoId())
+                    .orElseThrow(() -> new ExceptionNotFoundException("Producto no encontrado"));
+
+            // Buscar la producción existente
+            Produccion produccionExistente = produccionRepository.findById(produccionId)
+                    .orElseThrow(() -> new RuntimeException("Producción no encontrada"));
+
+            // Actualizar los campos de la producción existente con los nuevos valores
+            //produccionExistente.setSolicitud_produccion(produccion.getSolicitud_produccion());
+            produccionExistente.setProducido(produccion.getProducido());  // Actualizar producido si es necesario
+            produccionExistente.setComentario(produccion.getComentario()); // Actualizar comentario
+            //produccionExistente.setFechaProduccion(produccion.getFecha_produccion()); // Actualizar comentario
+
+            produccionExistente.setProducto(producto); // Relacionar nuevamente con el producto
+
+            //Aumenta el Stock de Producto
+            producto.setStock(producto.getStock() + produccion.getProducido());
 
         /*// Obtener la receta asociada al producto actual
         Receta receta = recetaRepository.findById(produccionExistente.getProducto().getReceta().getId())
@@ -194,65 +212,45 @@ public class ProduccionServiceImpl implements IProduccionService {
                 })
                 .collect(Collectors.toList());*/
 
-        // Asignar ingredientes ajustados a la producción existente
-        produccionExistente.setIngredientes(produccion.getIngredientes());
+            // Asignar ingredientes ajustados a la producción existente
+            //produccionExistente.setIngredientes(produccion.getIngredientes());
 
-        // Guardar la producción actualizada
-        return produccionRepository.save(produccionExistente);
+            // Guardar la producción actualizada
+            return produccionRepository.save(produccionExistente);
+        }catch (Exception e){
+            throw new ExceptionNotFoundException(e.getMessage());
+        }
     }
 
-
-
-//    @Override
-//    public Produccion editarProduccionById(Long produccionId, Produccion produccion) {
-//        // Buscar la producción existente
-//        Produccion produccionExistente = produccionRepository.findById(produccionId)
-//                .orElseThrow(() -> new RuntimeException("Producción no encontrada"));
-//
-//        // Actualizar campos básicos
-//        produccionExistente.setComentario(produccion.getComentario());
-//        produccionExistente.setSolicitud_produccion(produccion.getSolicitud_produccion());
-//        produccionExistente.setProducido(produccion.getProducido());
-//
-//        // Gestionar ingredientes
-//        if (produccion.getIngredientes() != null && !produccion.getIngredientes().isEmpty()) {
-//            // Eliminar ingredientes existentes
-//            produccionExistente.getIngredientes().forEach(pi -> {
-//                produccionIngredienteRepository.delete(pi);
-//            });
-//
-//            // Crear nuevos ingredientes
-//            List<ProduccionIngrediente> nuevosIngredientes = produccion.getIngredientes().stream()
-//                    .map(ing -> {
-//                        ProduccionIngrediente nuevo = new ProduccionIngrediente();
-//                        nuevo.setIngrediente(ing.getIngrediente());
-//                        nuevo.setUnidad(ing.getUnidad());
-//                        nuevo.setCantidad(ing.getCantidad());
-//                        nuevo.setProduccion(produccionExistente);
-//                        return nuevo;
-//                    })
-//                    .collect(Collectors.toList());
-//
-//            produccionExistente.setIngredientes(nuevosIngredientes);
-//        }
-//
-//        return produccionRepository.save(produccionExistente);
-//    }
 
     @Override
     public ProduccionResponseDTO getByProduccionId(Long id)  throws ExceptionNotFoundException{
         try {
 
             Produccion produccion = produccionRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Produccion no encontrado con id: " + id));
-            ProduccionResponseDTO produccionResponseDTO = new ProduccionResponseDTO();
-            produccionResponseDTO.setId(id);
-            produccionResponseDTO.setSolicitud_proudcion(produccion.getSolicitud_produccion());
-            produccionResponseDTO.setProducido(produccion.getProducido());
-            produccionResponseDTO.setComentario(produccion.getComentario());
-            produccionResponseDTO.setFecha_produccion(produccion.getFechaProduccion());
-            produccionResponseDTO.setProductoId(produccion.getProducto().getId());
-            produccionResponseDTO.setProducto_name(produccion.getProducto().getName());
-            return produccionResponseDTO;
+
+            ProduccionResponseDTO dto = new ProduccionResponseDTO();
+            dto.setId(produccion.getId());
+            dto.setSolicitud_proudcion(produccion.getSolicitud_produccion());
+            dto.setProducido(produccion.getProducido());
+            dto.setComentario(produccion.getComentario());
+            dto.setFecha_produccion(produccion.getFechaProduccion());
+            dto.setProductoId(produccion.getProducto().getId());
+            dto.setProducto_name(produccion.getProducto().getName());
+
+            // Convertir detalles de recera a DTO
+            List<DetalleProduccionResponseDto> detallesDto = produccion.getDetalleProduccions().stream().map(detalle -> {
+                DetalleProduccionResponseDto detalleDto = new DetalleProduccionResponseDto();
+                detalleDto.setId(detalle.getId());
+                detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
+                detalleDto.setCantidad(detalle.getCantidad());
+                detalleDto.setUnidad(detalle.getUnidad());
+                return detalleDto;
+            }).collect(Collectors.toList());
+
+            dto.setDetalleProduccions(detallesDto);
+
+            return dto;
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }
@@ -261,7 +259,34 @@ public class ProduccionServiceImpl implements IProduccionService {
     @Override
     public List<ProduccionResponseDTO> findAllProduccions()throws ExceptionNotFoundException {
         try {
-            return produccionRepository.findAll().stream().map(Produccion::produccionDTO).collect(Collectors.toList());
+            //return produccionRepository.findAll().stream().map(Produccion::produccionDTO).collect(Collectors.toList());
+            //return recetaRepository.findAll();
+            List<Produccion> produccions = produccionRepository.findAll();
+
+            return produccions.stream().map(produccion -> {
+                ProduccionResponseDTO dto = new ProduccionResponseDTO();
+                dto.setId(produccion.getId());
+                dto.setSolicitud_proudcion(produccion.getSolicitud_produccion());
+                dto.setProducido(produccion.getProducido());
+                dto.setComentario(produccion.getComentario());
+                dto.setFecha_produccion(produccion.getFechaProduccion());
+                dto.setProductoId(produccion.getProducto().getId());
+                dto.setProducto_name(produccion.getProducto().getName());
+
+                // Convertir detalles de receta a DTO
+                List<DetalleProduccionResponseDto> detallesDto = produccion.getDetalleProduccions().stream().map(detalle -> {
+                    DetalleProduccionResponseDto detalleDto = new DetalleProduccionResponseDto();
+                    detalleDto.setId(detalle.getId());
+                    detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
+                    detalleDto.setCantidad(detalle.getCantidad());
+                    detalleDto.setUnidad(detalle.getUnidad());
+                    return detalleDto;
+                }).collect(Collectors.toList());
+
+                dto.setDetalleProduccions(detallesDto);
+
+                return dto;
+            }).collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }

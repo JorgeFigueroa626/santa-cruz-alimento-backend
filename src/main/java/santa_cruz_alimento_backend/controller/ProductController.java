@@ -2,12 +2,9 @@ package santa_cruz_alimento_backend.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import santa_cruz_alimento_backend.dto.ProductDto;
-import santa_cruz_alimento_backend.dto.Request.ProductoRequestDTO;
-import santa_cruz_alimento_backend.dto.Response.ProductoResponseDTO;
+import santa_cruz_alimento_backend.dto.request.ProductoRequestDTO;
+import santa_cruz_alimento_backend.dto.response.ProductoResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Product;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.IProductService;
@@ -24,16 +21,6 @@ public class ProductController {
 
     @Autowired
     private IProductService productService;
-
-    //@PostMapping(PRODUCT)
-    public ResponseEntity<?> save(@RequestBody ProductDto productDto) throws ExceptionNotFoundException, Exception{
-        boolean success = productService.addProduct(productDto);
-        if (success) {
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        }else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     @PostMapping(PRODUCT)
     public JsonResult create(@RequestBody ProductoRequestDTO dto) throws ExceptionNotFoundException {

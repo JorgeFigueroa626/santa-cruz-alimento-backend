@@ -17,13 +17,8 @@ public class Compra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /*@ManyToOne
-    @JoinColumn(name = "proveedor_id", nullable = false)
-    private Proveedor proveedor;  // Relación con la entidad Proveedor
-    */
-
     @Column(name = "fecha_compra")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/La_Paz")
     private Timestamp fechaCompra;
 
     private Double total;

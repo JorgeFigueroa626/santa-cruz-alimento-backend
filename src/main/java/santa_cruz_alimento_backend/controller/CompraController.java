@@ -2,9 +2,9 @@ package santa_cruz_alimento_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import santa_cruz_alimento_backend.dto.Request.CompraDTO;
+import santa_cruz_alimento_backend.dto.request.CompraRequestDto;
+import santa_cruz_alimento_backend.dto.response.CompraResponseDto;
 import santa_cruz_alimento_backend.entity.model.Compra;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.ICompraService;
@@ -23,20 +23,20 @@ public class CompraController {
     private ICompraService compraService;
 
     @PostMapping(COMPRA)
-    public JsonResult crearCompra(@RequestBody CompraDTO compraDTO) throws ExceptionNotFoundException {
-        Compra save = compraService.createCompra(compraDTO);
+    public JsonResult crearCompra(@RequestBody CompraRequestDto compraRequestDto) throws ExceptionNotFoundException {
+        Compra save = compraService.createCompra(compraRequestDto);
         return new JsonResult(true, save, MESSAGE_SAVE);
     }
 
     @GetMapping(ALL_COMPRA)
     public JsonResult getAllCompras() throws ExceptionNotFoundException{
-        List<Compra> compras = compraService.findAll();
+        List<CompraResponseDto> compras = compraService.findAll();
         return new JsonResult(true, compras, MESSAGE_LIST);
     }
 
     @GetMapping(BY_COMPRA_ID)
     public JsonResult getCompraById(@PathVariable Long id) throws ExceptionNotFoundException{
-        Compra compra = compraService.getByCompraId(id);
+        CompraResponseDto compra = compraService.getByCompraId(id);
         return new JsonResult(true, compra, MESSAGE_BY);
     }
 

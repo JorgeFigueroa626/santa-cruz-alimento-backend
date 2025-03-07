@@ -2,10 +2,15 @@ package santa_cruz_alimento_backend.service.implementacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Request.CompraDTO;
+import santa_cruz_alimento_backend.dto.request.CompraRequestDto;
+import santa_cruz_alimento_backend.dto.response.CompraResponseDto;
+import santa_cruz_alimento_backend.dto.response.DetalleCompraResponseDto;
+import santa_cruz_alimento_backend.dto.response.DetalleVentasResponseDto;
+import santa_cruz_alimento_backend.dto.response.VentaResponseDto;
 import santa_cruz_alimento_backend.entity.model.Compra;
 import santa_cruz_alimento_backend.entity.model.DetalleCompra;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
+import santa_cruz_alimento_backend.entity.model.Venta;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.ICompraRepository;
 import santa_cruz_alimento_backend.repository.IDetalleComprasRepository;
@@ -29,13 +34,13 @@ public class CompraServiceImpl implements ICompraService {
     private IDetalleComprasRepository detalleCompraRepository;
 
     @Override
-    public Compra createCompra(CompraDTO compraDTO) throws ExceptionNotFoundException {
+    public Compra createCompra(CompraRequestDto compraRequestDto) throws ExceptionNotFoundException {
         try {
 
             Compra compra = new Compra();
             compra.setFechaCompra(new Timestamp(System.currentTimeMillis()));
 
-            List<DetalleCompra> detalleCompras = compraDTO.getDetalleCompras().stream().map(iDto ->{
+            List<DetalleCompra> detalleCompras = compraRequestDto.getDetalleCompras().stream().map(iDto ->{
                 Ingrediente ingrediente = ingredienteRepository.findById(iDto.getIngredienteId())
                         .orElseThrow(() -> new RuntimeException("Ingrediente no encontrado"));
 
@@ -66,18 +71,64 @@ public class CompraServiceImpl implements ICompraService {
 
 
     @Override
-    public List<Compra> findAll() throws ExceptionNotFoundException {
+    public List<CompraResponseDto> findAll() throws ExceptionNotFoundException {
         try {
-            return compraRepository.findAll();
+            //return compraRepository.findAll();
+            List<Compra> compras = compraRepository.findAll();
+
+            return compras.stream().map(compra -> {
+                CompraResponseDto dto = new CompraResponseDto();
+                dto.setId(compra.getId());
+                dto.setFecha_compra(compra.getFechaCompra());
+                dto.setTotal(compra.getTotal());
+                //dto.setUsuarioNombre(compra.ventaResponseDto().getUsuarioNombre()); // Obtener nombre del usuario
+
+                // Convertir detalles de venta a DTO
+                List<DetalleCompraResponseDto> detallesDto = compra.getDetalleCompras().stream().map(detalle -> {
+                    DetalleCompraResponseDto detalleDto = new DetalleCompraResponseDto();
+                    detalleDto.setId(detalle.getId());
+                    detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
+                    detalleDto.setCantidad(detalle.getCantidad());
+                    detalleDto.setUnidad(detalle.getIngrediente().getUnidad());
+                    detalleDto.setPricio_unitario(detalle.getPrecio());
+                    detalleDto.setSub_total(detalle.getTotal());
+                    return detalleDto;
+                }).collect(Collectors.toList());
+
+                dto.setDetalleCompras(detallesDto);
+
+                return dto;
+            }).collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }
     }
 
     @Override
-    public Compra getByCompraId(Long id) throws ExceptionNotFoundException{
+    public CompraResponseDto getByCompraId(Long id) throws ExceptionNotFoundException{
         try {
-            return compraRepository.findById(id).orElseThrow(() -> new RuntimeException("Compra no encontrado con id: " + id));
+            Compra compra = compraRepository.findById(id).orElseThrow(() -> new RuntimeException("Compra no encontrado con id: " + id));
+            CompraResponseDto dto = new CompraResponseDto();
+            dto.setId(compra.getId());
+            dto.setFecha_compra(compra.getFechaCompra());
+            dto.setTotal(compra.getTotal());
+            //dto.setUsuarioNombre(venta.ventaResponseDto().getUsuarioNombre()); // Obtener nombre del usuario
+
+            // Convertir detalles de venta a DTO
+            List<DetalleCompraResponseDto> detallesDto = compra.getDetalleCompras().stream().map(detalle -> {
+                DetalleCompraResponseDto detalleDto = new DetalleCompraResponseDto();
+                detalleDto.setId(detalle.getId());
+                detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
+                detalleDto.setCantidad(detalle.getCantidad());
+                detalleDto.setUnidad(detalle.getIngrediente().getUnidad());
+                detalleDto.setPricio_unitario(detalle.getPrecio());
+                detalleDto.setSub_total(detalle.getTotal());
+                return detalleDto;
+            }).collect(Collectors.toList());
+
+            dto.setDetalleCompras(detallesDto);
+
+            return dto;
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }

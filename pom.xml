@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>milsaboreshorneadostipicos.gmail.com</groupId>
-	<artifactId>santa-cruz-alimento-backend</artifactId>
+	<artifactId>api-santa-cruz-alimento</artifactId>
 	<version>0.0.1</version>
 	<name>santa-cruz-alimento-backend</name>
 	<description>Demo project for Spring Boot</description>

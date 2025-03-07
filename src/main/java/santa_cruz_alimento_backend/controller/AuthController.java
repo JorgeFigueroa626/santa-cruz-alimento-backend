@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import santa_cruz_alimento_backend.dto.Request.AuthRequestDto;
-import santa_cruz_alimento_backend.dto.Response.AuthResponseDto;
-import santa_cruz_alimento_backend.dto.Request.SignupRequestDto;
-import santa_cruz_alimento_backend.dto.Request.UserRequestDto;
-import santa_cruz_alimento_backend.entity.model.User;
+import santa_cruz_alimento_backend.dto.request.AuthRequestDto;
+import santa_cruz_alimento_backend.dto.response.AuthResponseDto;
+import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.request.UserRequestDto;
+import santa_cruz_alimento_backend.entity.model.Usuario;
 import santa_cruz_alimento_backend.repository.IUserRepository;
 import santa_cruz_alimento_backend.security.JWTUtil;
 import santa_cruz_alimento_backend.security.UserDetailsServiceImpl;
@@ -71,7 +71,7 @@ public class AuthController {
             throw  new BadCredentialsException("Incorrect CI o Password");
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(requestDto.getCi());
-        Optional<User> optionalUser = userRepository.findFirstByCi(userDetails.getUsername());
+        Optional<Usuario> optionalUser = userRepository.findFirstByCi(userDetails.getUsername());
         String jwt = jwtUtil.generateToken(userDetails);
         AuthResponseDto authResponseDto = new AuthResponseDto();
         if (optionalUser.isPresent()) {

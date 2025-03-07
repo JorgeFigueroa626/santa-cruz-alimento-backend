@@ -1,17 +1,13 @@
 package santa_cruz_alimento_backend.service.implementacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Request.SignupRequestDto;
-import santa_cruz_alimento_backend.dto.Request.UserRequestDto;
-import santa_cruz_alimento_backend.dto.Response.UserResponseDto;
-import santa_cruz_alimento_backend.entity.model.Category;
+import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.request.UserRequestDto;
+import santa_cruz_alimento_backend.dto.response.UserResponseDto;
 import santa_cruz_alimento_backend.entity.model.Rol;
-import santa_cruz_alimento_backend.entity.model.User;
+import santa_cruz_alimento_backend.entity.model.Usuario;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IRolRepository;
 import santa_cruz_alimento_backend.repository.IUserRepository;
@@ -35,14 +31,14 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserRequestDto createAdmin(SignupRequestDto requestDto) throws ExceptionNotFoundException {
-        User user = new User();
-        user.setFullName(requestDto.getFull_name());
-        user.setCi(requestDto.getCi());
-        user.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
+        Usuario usuario = new Usuario();
+        usuario.setFullName(requestDto.getFull_name());
+        usuario.setCi(requestDto.getCi());
+        usuario.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
         Rol rol = rolRepository.findByName("ADMINISTRADOR");
-        user.setRol(rol);
+        usuario.setRol(rol);
 
-        User createAdmin = userRepository.save(user);
+        Usuario createAdmin = userRepository.save(usuario);
         UserRequestDto userRequestDto = new UserRequestDto();
         userRequestDto.setId(createAdmin.getId());
 
@@ -53,20 +49,20 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserRequestDto createUser(SignupRequestDto requestDto) throws ExceptionNotFoundException {
         try {
-            User user = new User();
-            user.setFullName(requestDto.getFull_name());
-            user.setCi(requestDto.getCi());
-            user.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
+            Usuario usuario = new Usuario();
+            usuario.setFullName(requestDto.getFull_name());
+            usuario.setCi(requestDto.getCi());
+            usuario.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
 
             // Verifica si el nuevo rol existe antes de asignarlo
             Rol rolId = rolRepository.findById(requestDto.getRol_id())
                     .orElseThrow(() -> new ExceptionNotFoundException("Rol no encontrado con ID: " + requestDto.getRol_id()));
 
-            user.setRol(rolId);
+            usuario.setRol(rolId);
 
-            User createUser = userRepository.save(user);
+            Usuario createUsuario = userRepository.save(usuario);
             UserRequestDto userRequestDto = new UserRequestDto();
-            userRequestDto.setId(createUser.getId());
+            userRequestDto.setId(createUsuario.getId());
             return userRequestDto;
 
         }catch (Exception e){
@@ -82,7 +78,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public List<UserResponseDto> findAll() throws ExceptionNotFoundException {
-        return userRepository.findAll().stream().map(User::userResponseDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(Usuario::userResponseDto).collect(Collectors.toList());
 
     }
 
@@ -90,7 +86,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserResponseDto getByUserId(Long id) throws ExceptionNotFoundException {
         try {
-            Optional<User> optionalUser = userRepository.findById(id);
+            Optional<Usuario> optionalUser = userRepository.findById(id);
             if (optionalUser.isPresent()) {
                 return optionalUser.get().userResponseDto();
             }
@@ -104,19 +100,19 @@ public class UserServiceImpl implements IUserService {
     @Override
     public boolean updateByUserId(Long id, SignupRequestDto requestDto) throws ExceptionNotFoundException, Exception {
         try {
-            User user = userRepository.findById(id)
+            Usuario usuario = userRepository.findById(id)
                     .orElseThrow(() -> new ExceptionNotFoundException("Usuario con ID " + id + " no encontrado"));
 
             Rol rol = rolRepository.findById(requestDto.getRol_id())
                     .orElseThrow(() -> new ExceptionNotFoundException("Rol con ID " + requestDto.getRol_id() + " no encontrado"));
 
-            user.setFullName(requestDto.getFull_name());
-            user.setCi(requestDto.getCi());
-            user.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
+            usuario.setFullName(requestDto.getFull_name());
+            usuario.setCi(requestDto.getCi());
+            usuario.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
             //user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-            user.setRol(rol);
+            usuario.setRol(rol);
 
-            userRepository.save(user);
+            userRepository.save(usuario);
             return true;
 
         }catch (Exception e){

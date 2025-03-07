@@ -1,7 +1,8 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Response.ProduccionResponseDTO;
+import santa_cruz_alimento_backend.dto.request.ProduccionRequestDto;
+import santa_cruz_alimento_backend.dto.response.ProduccionResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Produccion;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
@@ -14,7 +15,7 @@ public interface IProduccionService {
 
     Produccion registrarProduccion(Long productoId, double solicitud_producion) throws ExceptionNotFoundException;
 
-    Produccion editarProduccionById(Long produccionId, Produccion produccionActualizada) throws ExceptionNotFoundException;
+    Produccion editarProduccionById(Long produccionId, ProduccionRequestDto produccionActualizada) throws ExceptionNotFoundException;
 
     ProduccionResponseDTO getByProduccionId(Long id) throws ExceptionNotFoundException;
 

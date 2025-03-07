@@ -2,9 +2,8 @@ package santa_cruz_alimento_backend.service.implementacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.ProductDto;
-import santa_cruz_alimento_backend.dto.Request.ProductoRequestDTO;
-import santa_cruz_alimento_backend.dto.Response.ProductoResponseDTO;
+import santa_cruz_alimento_backend.dto.request.ProductoRequestDTO;
+import santa_cruz_alimento_backend.dto.response.ProductoResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Business;
 import santa_cruz_alimento_backend.entity.model.Category;
 import santa_cruz_alimento_backend.entity.model.Product;
@@ -16,9 +15,7 @@ import santa_cruz_alimento_backend.repository.IProductRepository;
 import santa_cruz_alimento_backend.repository.IRecetaRepository;
 import santa_cruz_alimento_backend.service.interfaces.IProductService;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,38 +63,12 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public boolean addProduct(ProductDto productDto) throws IOException {
-        try {
-            Product product = new Product();
-            product.setName(productDto.getName());
-            product.setDescription(productDto.getDescription());
-            product.setPrice(productDto.getPrice());
-
-            Category categoryId = categoryRepository.findById(productDto.getCategory_id()).orElseThrow(() -> new RuntimeException("Category no encontrado con id: " + productDto.getCategory_id()));
-            Business businessId = businessRepository.findById(productDto.getBusiness_id()).orElseThrow(() -> new RuntimeException("Negocio no encontrado con id: " + productDto.getBusiness_id()));
-
-            product.setCategory(categoryId);
-            product.setBusiness(businessId);
-            productRepository.save(product);
-            return true;
-
-        }catch (Exception e ){
-            return false;
-        }
-    }
-
-    @Override
     public List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException {
         try {
             return productRepository.findAll().stream().map(Product::productoDto).collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }
-    }
-
-    @Override
-    public List<ProductDto> findAllProductByName(String name) {
-        return List.of();
     }
 
     @Override

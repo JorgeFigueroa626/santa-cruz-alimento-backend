@@ -1,8 +1,8 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Request.IngredienteRequestDTO;
-import santa_cruz_alimento_backend.dto.Response.IngredienteResponseDTO;
+import santa_cruz_alimento_backend.dto.request.IngredienteRequestDTO;
+import santa_cruz_alimento_backend.dto.response.IngredientesResponseDto;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
@@ -15,7 +15,7 @@ public interface IIngredienteService {
 
     Ingrediente getById(Long id) throws ExceptionNotFoundException;
 
-    List<IngredienteResponseDTO> findAll() throws ExceptionNotFoundException;
+    List<IngredientesResponseDto> findAll() throws ExceptionNotFoundException;
 
     Ingrediente updateById(Long id, Ingrediente ingrediente) throws ExceptionNotFoundException;
 

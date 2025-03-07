@@ -2,8 +2,8 @@ package santa_cruz_alimento_backend.service.implementacion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.Request.IngredienteRequestDTO;
-import santa_cruz_alimento_backend.dto.Response.IngredienteResponseDTO;
+import santa_cruz_alimento_backend.dto.request.IngredienteRequestDTO;
+import santa_cruz_alimento_backend.dto.response.IngredientesResponseDto;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IIngredienteRepository;
@@ -11,8 +11,6 @@ import santa_cruz_alimento_backend.service.interfaces.IIngredienteService;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static santa_cruz_alimento_backend.util.shared.ReplyMessage.*;
 
 @Service
 public class IngredienteServiceImpl implements IIngredienteService {
@@ -25,7 +23,7 @@ public class IngredienteServiceImpl implements IIngredienteService {
         try {
             Ingrediente ingrediente = new Ingrediente();
             ingrediente.setName(requestDTO.getName());
-            ingrediente.setCantidad((double) 0);
+            ingrediente.setCantidad(requestDTO.getCantidad());
             ingrediente.setUnidad(requestDTO.getUnidad());
             return ingredienteRepository.save(ingrediente);
         }catch (Exception e){
@@ -39,11 +37,11 @@ public class IngredienteServiceImpl implements IIngredienteService {
     }
 
     @Override
-    public List<IngredienteResponseDTO> findAll() throws ExceptionNotFoundException {
+    public List<IngredientesResponseDto> findAll() throws ExceptionNotFoundException {
         try {
 
             return ingredienteRepository.findAll().stream()
-                    .map(i -> new IngredienteResponseDTO(i.getId(),i.getName(),i.getCantidad(), i.getUnidad()))
+                    .map(i -> new IngredientesResponseDto(i.getId(),i.getName(),i.getCantidad(), i.getUnidad()))
                     .collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());

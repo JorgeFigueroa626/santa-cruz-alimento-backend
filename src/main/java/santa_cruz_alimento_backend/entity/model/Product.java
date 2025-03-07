@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import santa_cruz_alimento_backend.dto.Response.ProductoResponseDTO;
+import santa_cruz_alimento_backend.dto.response.ProductoResponseDTO;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -39,6 +42,10 @@ public class Product {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "receta_id", referencedColumnName = "id", nullable = false)
     private Receta receta; // ✅ Un Producto tiene UNA Receta
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore // ✅ Evita la serialización infinita
+    private List<DetalleVenta> detallesVentas = new ArrayList<>();
 
     public ProductoResponseDTO productoDto(){
         ProductoResponseDTO productDto = new ProductoResponseDTO();

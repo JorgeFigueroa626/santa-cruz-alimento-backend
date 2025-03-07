@@ -6,7 +6,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import santa_cruz_alimento_backend.dto.Response.CategoryResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Category;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.ICategoryRepository;

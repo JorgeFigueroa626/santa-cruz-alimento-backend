@@ -49,12 +49,10 @@ public final class Constante {
     public static final String ALL_RECETA = "/receta";
     public static final String BY_RECETA_ID = "/receta/{id}";
     public static final String BY_NAME_RECETA = "/receta/{nombre}/ingrediente";
-    public static final String RECETAS = "/recetas";
 
     public static final String PRODUCT = "/product";
     public static final String ALL_PRODUCT = "/product";
     public static final String BY_PRODUCT_ID = "/product/{id}";
-    public static final String PRODUCTS = "/products";
 
     public static final String COMPRA = "/compra";
     public static final String ALL_COMPRA = "/compra";
@@ -70,8 +68,10 @@ public final class Constante {
     public static final String BY_PRODUCCION_ID = "/produccion/{id}";
     public static final String BY_PRODUCCIONS_ID = "/produccions/{id}";
 
-    public static final String PRODUCCION_INGREDIENTE = "/produccion-ingrediente";
-    public static final String ALL_PRODUCCION_INGREDIENTE = "/produccion-ingrediente";
+    public static final String VENTA = "/venta";
+    public static final String ALL_VENTA = "/venta";
+    public static final String BY_VENTA_ID = "/venta/{id}";
+    public static final String VENTAS_BY_USUARIO_ID = "/venta/usuario/{userId}";
 
 
 }

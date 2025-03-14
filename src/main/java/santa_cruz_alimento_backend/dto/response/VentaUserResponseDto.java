@@ -11,9 +11,9 @@ public class VentaUserResponseDto {
 
     private Long id;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/La_Paz")
-    private Timestamp fechaVenta;
+    private Timestamp fecha_venta;
     private Double total;
     private Long usuarioId;
-    private String usuarioNombre; // Para devolver el nombre del usuario
+    private String usuario_nombre; // Para devolver el nombre del usuario
     private List<DetalleVentasResponseDto> detalles;
 }

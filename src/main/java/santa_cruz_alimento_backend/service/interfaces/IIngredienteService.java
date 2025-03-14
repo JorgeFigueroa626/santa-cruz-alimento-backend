@@ -17,7 +17,7 @@ public interface IIngredienteService {
 
     List<IngredientesResponseDto> findAll() throws ExceptionNotFoundException;
 
-    Ingrediente updateById(Long id, Ingrediente ingrediente) throws ExceptionNotFoundException;
+    Ingrediente updateById(Long id, IngredienteRequestDTO ingrediente) throws ExceptionNotFoundException;
 
     void deleteById(Long id) throws ExceptionNotFoundException;
 }

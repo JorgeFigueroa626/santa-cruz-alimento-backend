@@ -10,6 +10,7 @@ import santa_cruz_alimento_backend.repository.IDetalleRecetasRepository;
 import santa_cruz_alimento_backend.repository.IIngredienteRepository;
 import santa_cruz_alimento_backend.repository.IRecetaRepository;
 import santa_cruz_alimento_backend.service.interfaces.IRecetaService;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.io.IOException;
 import java.util.List;
@@ -70,7 +71,7 @@ public class RecetaServiceImpl implements IRecetaService {
 
             List<DetalleRecetas> detallesDto = recetaRequestDTO.getIngredientes().stream().map(iDto -> {
                 Ingrediente ingrediente = ingredienteRepository.findById(iDto.getIngredienteId())
-                        .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado"));
+                        .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con el ID : " + iDto.getIngredienteId()));
 
                 DetalleRecetas recetaIngrediente = new DetalleRecetas();
                 recetaIngrediente.setIngrediente(ingrediente);
@@ -81,6 +82,7 @@ public class RecetaServiceImpl implements IRecetaService {
             }).collect(Collectors.toList());
 
             receta.setDetalleRecetas(detallesDto);
+            receta.setStatus(ReplyStatus.ACTIVO);
 
             return recetaRepository.save(receta);
         }catch (Exception e){
@@ -98,6 +100,7 @@ public class RecetaServiceImpl implements IRecetaService {
                 RecetaResponseDto dto = new RecetaResponseDto();
                 dto.setId(receta.getId());
                 dto.setName(receta.getName());
+                dto.setStatus(receta.getStatus());
 
                 // Convertir detalles de receta a DTO
                 List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
@@ -123,14 +126,16 @@ public class RecetaServiceImpl implements IRecetaService {
     public  List<IngredientesResponseDto> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException {
         try {
             Receta receta = recetaRepository.findByName(nombreReceta)
-                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada"));
+                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada con el Nombre : " + nombreReceta));
 
             return receta.getDetalleRecetas().stream()
                     .map(ri -> new IngredientesResponseDto(
                             ri.getId(),
                             ri.getIngrediente().getName(),
                             ri.getCantidad(),
-                            ri.getUnidad()
+                            ri.getIngrediente().getStock(),
+                            ri.getUnidad(),
+                            ri.getIngrediente().getStatus()
                             ))
                     .collect(Collectors.toList());
         }catch (Exception e){
@@ -148,6 +153,7 @@ public class RecetaServiceImpl implements IRecetaService {
             RecetaResponseDto dto = new RecetaResponseDto();
             dto.setId(receta.getId());
             dto.setName(receta.getName());
+            dto.setStatus(receta.getStatus());
 
             // Convertir detalles de recera a DTO
             List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
@@ -173,10 +179,11 @@ public class RecetaServiceImpl implements IRecetaService {
         try {
             // Buscar la receta existente
             Receta receta = recetaRepository.findById(recetaId)
-                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada"));
+                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada con el ID : " + recetaId));
 
             // Actualizar el nombre de la receta
             receta.setName(recetaRequestDTO.getName());
+            receta.setStatus(recetaRequestDTO.getStatus());
 
             // Lista de ingredientes actuales en la base de datos
             List<DetalleRecetas> ingredientesActuales = receta.getDetalleRecetas();
@@ -226,8 +233,10 @@ public class RecetaServiceImpl implements IRecetaService {
     @Override
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {
-            recetaRepository.deleteById(id);
-
+            Receta receta = recetaRepository.findById(id)
+                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada con el ID : " + id));
+            receta.setStatus(ReplyStatus.INACTIVO);
+            recetaRepository.save(receta);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }

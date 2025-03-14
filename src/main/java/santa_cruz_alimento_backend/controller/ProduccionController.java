@@ -3,11 +3,11 @@ package santa_cruz_alimento_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import santa_cruz_alimento_backend.dto.base.BaseResponse;
 import santa_cruz_alimento_backend.dto.request.ProduccionRequestDto;
 import santa_cruz_alimento_backend.dto.response.ProduccionResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Produccion;
 import santa_cruz_alimento_backend.service.interfaces.IProduccionService;
-import santa_cruz_alimento_backend.util.shared.JsonResult;
 
 import java.util.List;
 
@@ -22,33 +22,33 @@ public class ProduccionController {
     private IProduccionService produccionService;
 
     @GetMapping(PRODUCCION_BY_PRODUCTO_ID)
-    public JsonResult calcular(@PathVariable Long productoId, @RequestParam double produccion)  {
+    public BaseResponse calcular(@PathVariable Long productoId, @RequestParam double produccion)  {
         Produccion calcular = produccionService.calcularProduccion(productoId, produccion);
-        return new JsonResult(true, calcular, MESSAGE_BY);
+        return new BaseResponse(true, calcular, MESSAGE_BY);
     }
 
     @PostMapping(PRODUCCION_BY_PRODUCTO_ID)
-    public JsonResult registrarProduccion(@PathVariable Long productoId, @RequestParam double solicitudProduccion){
+    public BaseResponse registrarProduccion(@PathVariable Long productoId, @RequestParam double solicitudProduccion){
         Produccion nuevaProduccion = produccionService.registrarProduccion(productoId, solicitudProduccion);
-        return new JsonResult(true, nuevaProduccion, MESSAGE_SAVE);
+        return new BaseResponse(true, nuevaProduccion, MESSAGE_SAVE);
     }
 
     @GetMapping(PRODUCCION)
-    public JsonResult findAll() {
+    public BaseResponse findAll() {
         List<ProduccionResponseDTO> list =produccionService.findAllProduccions();
-        return new JsonResult(true, list, MESSAGE_LIST);
+        return new BaseResponse(true, list, MESSAGE_LIST);
     }
 
     @GetMapping(BY_PRODUCCIONS_ID)
-    public JsonResult getByProduccionId(@PathVariable Long id){
+    public BaseResponse getByProduccionId(@PathVariable Long id){
         ProduccionResponseDTO dto = produccionService.getByProduccionId(id);
-        return new JsonResult(true, dto, MESSAGE_BY);
+        return new BaseResponse(true, dto, MESSAGE_BY);
     }
 
     @PutMapping(BY_PRODUCCION_ID)
-    public JsonResult editar(@PathVariable Long id, @RequestBody ProduccionRequestDto produccion){
+    public BaseResponse editar(@PathVariable Long id, @RequestBody ProduccionRequestDto produccion){
         Produccion  editar = produccionService.editarProduccionById(id, produccion);
-        return new JsonResult(true, editar, MESSAGE_UPDATE);
+        return new BaseResponse(true, editar, MESSAGE_UPDATE);
     }
 
 }

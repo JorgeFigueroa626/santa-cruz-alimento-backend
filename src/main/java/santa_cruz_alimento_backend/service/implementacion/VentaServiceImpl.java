@@ -142,17 +142,17 @@ public class VentaServiceImpl implements IVentaService {
     }
 
     @Override
-    public List<VentaUserResponseDto> findAllVentasByUserId(Long userId) throws ExceptionNotFoundException {
-        return List.of();
-        /*try {
-            List<Venta> ventas = ventaRepository.findByUserId(userId);
+    public List<VentaUserResponseDto> findAllVentasByUsuarioId(Long userId) throws ExceptionNotFoundException {
+
+        try {
+            List<Venta> ventas = ventaRepository.findByUsuarioId(userId);
 
             return ventas.stream().map(venta -> {
                 VentaUserResponseDto dto = new VentaUserResponseDto();
                 dto.setId(venta.getId());
-                dto.setFechaVenta(venta.getFechaVenta());
-                dto.setUsuarioId(venta.getUser().getId());
-                dto.setUsuarioNombre(venta.getUser().getFullName());
+                dto.setFecha_venta(venta.getFechaVenta());
+                dto.setUsuarioId(venta.getUsuario().getId());
+                dto.setUsuario_nombre(venta.getUsuario().getFullName());
                 dto.setTotal(venta.getTotal());
 
                 // Convertir detalles de venta a DTO
@@ -172,36 +172,7 @@ public class VentaServiceImpl implements IVentaService {
             }).collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
-        }*/
+        }
     }
 
-    /*@Override
-    public List<VentaResponseDto> findAllVentasByUserId(Long userId) throws ExceptionNotFoundException {
-        try {
-            List<Venta> ventas = ventaRepository.findByUsuarioId(userId);
-
-            return ventas.stream().map(venta -> {
-                VentaResponseDto dto = new VentaResponseDto();
-                dto.setId(venta.getId());
-                dto.setFechaVenta(venta.getFechaVenta());
-                dto.setTotal(venta.getTotal());
-                dto.setUsuarioNombre(venta.getUser().getFullName());
-
-                // Convertir detalles de venta a DTO
-                List<DetalleVentasResponseDto> detallesDto = venta.getDetallesVentas().stream().map(detalle -> {
-                    DetalleVentasResponseDto detalleDto = new DetalleVentasResponseDto();
-                    detalleDto.setNombre_producto(detalle.getProducto().getName());
-                    detalleDto.setCantidad(detalle.getCantidad());
-                    return detalleDto;
-                }).collect(Collectors.toList());
-
-                dto.setDetalles(detallesDto);
-
-                return dto;
-            }).collect(Collectors.toList());
-        }catch (Exception e){
-            throw new ExceptionNotFoundException(e.getMessage());
-        }
-
-    }*/
 }

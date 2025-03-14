@@ -40,18 +40,18 @@ public class ProduccionServiceImpl implements IProduccionService {
 
             // Buscar el producto
             Product producto = productoRepository.findById(productoId)
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID : " + productoId));
 
             // Buscar la receta asociada al producto
             Receta receta = recetaRepository.findById(producto.getReceta().getId())
-                    .orElseThrow(() -> new RuntimeException("Receta no encontrada"));
+                    .orElseThrow(() -> new RuntimeException("Receta no encontrada con ID : " + producto.getReceta().getId()));
 
             // Crear nueva lista de ingredientes ajustada
             List<DetalleProduccion> ingredientesAjustados = receta.getDetalleRecetas().stream()
                     .map(ri -> {
 
                         Ingrediente ingrediente = ingredienteRepository.findById(ri.getIngrediente().getId())
-                                .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado"));
+                                .orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con ID : " + ri.getIngrediente().getId()));
 
                         DetalleProduccion nuevoPI = new DetalleProduccion();
                         nuevoPI.setId(ri.getId());
@@ -60,22 +60,43 @@ public class ProduccionServiceImpl implements IProduccionService {
                         nuevoPI.setUnidad(ri.getUnidad());
                         double nuevaCantidad = (produccion_total / producto.getStock()) * ri.getCantidad();
 
-                        if (nuevaCantidad > ingrediente.getCantidad()){
+                        // Definir las cantidades
+                        double kg = 2.66; // en kilogramos
+                        double gramos = 1200; // en gramos
+
+                        // Convertir los kilogramos a gramos
+                        double kgEnGramos = ingrediente.getCantidad() * 1000;
+
+                        // Restar los gramos
+                        double resultadoEnGramos = kgEnGramos - nuevaCantidad;
+
+                        // Si necesitas el resultado en kilogramos
+                        double resultadoEnKg = resultadoEnGramos / 1000;
+                        System.out.print(" Operacion " + " = ( " + produccion_total + " / " +  producto.getStock() + " * " + ri.getCantidad()  + " = " + resultadoEnGramos + ri.getUnidad() + " )");
+
+
+                        /*double kg_a_GR =  1000 * nuevaCantidad;
+                        double gr_a_KG = nuevaCantidad / 1000;
+
+                        double lt_a_ML =  1000 * nuevaCantidad;
+                        double ml_a_LT = nuevaCantidad / 1000;*/
+
+                        if (resultadoEnKg > ingrediente.getStock()){
                             String mensaje = new StringBuilder()
                                     .append("¡Cantidad del Ingrediente ").append("'" + ingrediente.getName() + "'")
-                                    .append(" = ").append(ingrediente.getCantidad())
+                                    .append(" = ").append(ingrediente.getStock())
                                     .append(" " + ingrediente.getUnidad())
                                     .append("¡ !INSUFICIENTE!\n")
                                     .append(" !Se requiere para la Producción una cantidad mayor a ")
-                                    .append(nuevaCantidad)
+                                    .append(resultadoEnKg)
                                     .append(" ")
                                     .append(ingrediente.getUnidad()+"!")
                                     .toString();
 
                             throw new ExceptionNotFoundException(mensaje);
                         }else {
-                            //ingrediente.setCantidad(ingrediente.getCantidad() - nuevaCantidad);
-                            System.out.print(" Inventario del ingrediente " + ingrediente.getName() + " = ( " + ingrediente.getCantidad() + " - " +  nuevaCantidad + " ); ");
+                            //ingrediente.getStock(ingrediente.getStock() - nuevaCantidad);
+                            //System.out.print(" Inventario del ingrediente " + ingrediente.getName() + " = ( " + ingrediente.getCantidad() + " - " +  nuevaCantidad + " ); ");
                         }
 
                         nuevoPI.setCantidad(nuevaCantidad);
@@ -105,11 +126,11 @@ public class ProduccionServiceImpl implements IProduccionService {
 
             // Buscar el producto
             Product producto = productoRepository.findById(productoId)
-                    .orElseThrow(() -> new ExceptionNotFoundException("Producto no encontrado"));
+                    .orElseThrow(() -> new ExceptionNotFoundException("Producto no encontrado con ID : " + productoId ));
 
             // Buscar la receta asociada al producto
             Receta receta = recetaRepository.findById(producto.getReceta().getId())
-                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada"));
+                    .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada con el ID : " + producto.getReceta().getId()));
 
             // Crear una nueva instancia de Produccion
             Produccion produccion = new Produccion();
@@ -127,10 +148,11 @@ public class ProduccionServiceImpl implements IProduccionService {
                         nuevoPI.setUnidad(ri.getUnidad());
                         double nuevaCantidad = (solicitud_producion / producto.getStock()) * ri.getCantidad();
 
-                        if (nuevaCantidad > ingrediente.getCantidad()){
+
+                        if (nuevaCantidad > ingrediente.getStock()){
                             String mensaje = new StringBuilder()
                                     .append("¡Cantidad del Ingrediente ").append("'" + ingrediente.getName() + "'")
-                                    .append(" con ").append(ingrediente.getCantidad())
+                                    .append(" con ").append(ingrediente.getStock())
                                     .append(" " + ingrediente.getUnidad())
                                     .append("¡ !INSUFICIENTE! \n")
                                     .append("!Se requiere para la Producción una cantidad mayor a ")
@@ -139,10 +161,9 @@ public class ProduccionServiceImpl implements IProduccionService {
                                     .append(ingrediente.getUnidad())
                                     .append("!")
                                     .toString();
-
                             throw new ExceptionNotFoundException(mensaje);
                         }else {
-                            ingrediente.setCantidad(ingrediente.getCantidad() - nuevaCantidad);
+                            ingrediente.setStock(ingrediente.getStock() - nuevaCantidad);
                         }
 
                         nuevoPI.setCantidad(nuevaCantidad);

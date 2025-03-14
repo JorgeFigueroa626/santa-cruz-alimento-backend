@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import santa_cruz_alimento_backend.dto.response.UserResponseDto;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +31,8 @@ public class Usuario implements UserDetails {
 
     private String password;
 
+    private ReplyStatus status;
+
     @ManyToOne
     @JoinColumn(name = "rol_id", referencedColumnName = "id", nullable = false)
     private Rol rol;
@@ -41,6 +44,7 @@ public class Usuario implements UserDetails {
         userResponse.setFull_name(fullName);
         userResponse.setCi(ci);
         userResponse.setPassword(password);
+        userResponse.setStatus(status);
         userResponse.setRol_id(rol.getId());
         userResponse.setRol_name(rol.getName());
         return userResponse;

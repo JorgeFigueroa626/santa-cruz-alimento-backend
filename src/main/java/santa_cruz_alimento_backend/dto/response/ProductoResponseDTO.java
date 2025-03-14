@@ -6,9 +6,11 @@ import lombok.Data;
 public class ProductoResponseDTO {
     private Long id;
     private String name;
+    private String image_url;
     private String description;
-    private Integer price;
+    private Double price;
     private Integer stock;
+    private Integer status;
     private Long categoryId;
     private Long businessId;
     private String business_name;

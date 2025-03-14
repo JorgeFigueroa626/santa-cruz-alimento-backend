@@ -21,11 +21,15 @@ public class Product {
 
     private String name;
 
+    private String image;
+
     private String description;
 
-    private Integer price;
+    private Double price;
 
     private Integer stock;
+
+    private Integer status;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
@@ -51,9 +55,11 @@ public class Product {
         ProductoResponseDTO productDto = new ProductoResponseDTO();
         productDto.setId(id);
         productDto.setName(name);
+        productDto.setImage_url(image);
         productDto.setDescription(description);
         productDto.setPrice(price);
         productDto.setStock(stock);
+        productDto.setStatus(status);
         productDto.setCategoryId(category.getId());
         productDto.setBusinessId(business.getId());
         productDto.setBusiness_name(business.getName());

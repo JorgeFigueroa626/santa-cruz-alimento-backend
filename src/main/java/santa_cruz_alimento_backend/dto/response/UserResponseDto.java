@@ -1,6 +1,7 @@
 package santa_cruz_alimento_backend.dto.response;
 
 import lombok.Data;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 @Data
 public class UserResponseDto {
@@ -12,6 +13,8 @@ public class UserResponseDto {
     private String ci;
 
     private String password;
+
+    private ReplyStatus status;
 
     private Long rol_id;
 

@@ -16,11 +16,13 @@ public interface IProductService {
     ///
     Product createProducto(ProductoRequestDTO productoRequestDTO) throws ExceptionNotFoundException;
 
+    Product createProductos(ProductoRequestDTO productoRequestDTO) throws ExceptionNotFoundException;
+
     public List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException;
 
     Product getByProductById(Long productId) throws ExceptionNotFoundException;
 
-    Product updateProduct(Long productId, ProductoRequestDTO productDto) throws ExceptionNotFoundException, Exception;
+    Product updateProduct(Long productId, ProductoRequestDTO productDto) throws ExceptionNotFoundException;
 
     public boolean deleteByProductId(Long id) throws ExceptionNotFoundException;
 }

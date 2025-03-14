@@ -2,12 +2,15 @@ package santa_cruz_alimento_backend.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class CategoryResponseDTO {
 
+    private Long id;
+
     private String name;
+
+    private ReplyStatus status;
 }

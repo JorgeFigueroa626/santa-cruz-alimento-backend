@@ -39,17 +39,4 @@ public class Produccion {
     @JsonManagedReference // Marca este lado como el lado "dueño" de la relación
     private List<DetalleProduccion> detalleProduccions = new ArrayList<>();
 
-    /*public ProduccionResponseDTO produccionDTO(){
-        ProduccionResponseDTO dto = new ProduccionResponseDTO();
-        dto.setId(id);
-        dto.setSolicitud_proudcion(solicitud_produccion);
-        dto.setProducido(producido);
-        dto.setComentario(comentario);
-        dto.setFecha_produccion(fechaProduccion);
-        dto.setProductoId(producto.getId());
-        dto.setProducto_name(producto.getName());
-        return  dto;
-    }*/
-
-
 }

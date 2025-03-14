@@ -3,6 +3,7 @@ package santa_cruz_alimento_backend.entity.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,11 @@ public class Ingrediente {
 
     private Double cantidad;
 
+    private Double stock;
+
     private String unidad;
+
+    private ReplyStatus status;
 
     @OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // ✅ Evita la serialización infinita

@@ -3,12 +3,12 @@ package santa_cruz_alimento_backend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import santa_cruz_alimento_backend.dto.base.BaseResponse;
 import santa_cruz_alimento_backend.dto.request.IngredienteRequestDTO;
 import santa_cruz_alimento_backend.dto.response.IngredientesResponseDto;
 import santa_cruz_alimento_backend.entity.model.Ingrediente;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.IIngredienteService;
-import santa_cruz_alimento_backend.util.shared.JsonResult;
 
 import java.util.List;
 
@@ -24,33 +24,33 @@ public class IngredienteController {
     private IIngredienteService ingredienteService;
 
     @PostMapping(INGREDIENTE)
-    public JsonResult save(@RequestBody IngredienteRequestDTO ingrediente) throws ExceptionNotFoundException {
+    public BaseResponse save(@RequestBody IngredienteRequestDTO ingrediente) throws ExceptionNotFoundException {
         Ingrediente save = ingredienteService.save(ingrediente);
-        return new JsonResult(true, save, MESSAGE_SAVE);
+        return new BaseResponse(true, save, MESSAGE_SAVE);
 
     }
 
     @GetMapping(BY_INGREDIENTE_ID)
-    public JsonResult getById(@PathVariable Long id) throws ExceptionNotFoundException{
+    public BaseResponse getById(@PathVariable Long id) throws ExceptionNotFoundException{
         Ingrediente ingrediente = ingredienteService.getById(id);
-        return new JsonResult(true, ingrediente, MESSAGE_BY);
+        return new BaseResponse(true, ingrediente, MESSAGE_BY);
     }
 
     @GetMapping(ALL_INGREDIENTE)
-    public JsonResult findAll() throws ExceptionNotFoundException{
+    public BaseResponse findAll() throws ExceptionNotFoundException{
         List<IngredientesResponseDto> list = ingredienteService.findAll();
-        return  new JsonResult(true, list, MESSAGE_LIST);
+        return  new BaseResponse(true, list, MESSAGE_LIST);
     }
 
     @PutMapping(BY_INGREDIENTE_ID)
-    public JsonResult updateById(@PathVariable Long id, @RequestBody Ingrediente ingrediente) throws ExceptionNotFoundException{
+    public BaseResponse updateById(@PathVariable Long id, @RequestBody IngredienteRequestDTO ingrediente) throws ExceptionNotFoundException{
         Ingrediente update = ingredienteService.updateById(id, ingrediente);
-        return new JsonResult(true, update, MESSAGE_UPDATE);
+        return new BaseResponse(true, update, MESSAGE_UPDATE);
     }
 
     @DeleteMapping(BY_INGREDIENTE_ID)
-    public JsonResult deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
+    public BaseResponse deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
         ingredienteService.deleteById(id);
-        return new JsonResult(true, null, MESSAGE_DELETE);
+        return new BaseResponse(true, null, MESSAGE_DELETE);
     }
 }

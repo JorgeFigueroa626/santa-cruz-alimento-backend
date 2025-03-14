@@ -18,5 +18,5 @@ public interface IVentaService {
 
     List<VentaResponseDto> findAll() throws ExceptionNotFoundException;
 
-    List<VentaUserResponseDto> findAllVentasByUserId(Long userId) throws ExceptionNotFoundException;
+    List<VentaUserResponseDto> findAllVentasByUsuarioId(Long userId) throws ExceptionNotFoundException;
 }

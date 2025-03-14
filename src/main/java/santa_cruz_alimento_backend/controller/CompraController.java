@@ -3,12 +3,13 @@ package santa_cruz_alimento_backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import santa_cruz_alimento_backend.dto.base.BaseResponse;
 import santa_cruz_alimento_backend.dto.request.CompraRequestDto;
 import santa_cruz_alimento_backend.dto.response.CompraResponseDto;
 import santa_cruz_alimento_backend.entity.model.Compra;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.ICompraService;
-import santa_cruz_alimento_backend.util.shared.JsonResult;
+
 
 import java.util.List;
 
@@ -23,35 +24,35 @@ public class CompraController {
     private ICompraService compraService;
 
     @PostMapping(COMPRA)
-    public JsonResult crearCompra(@RequestBody CompraRequestDto compraRequestDto) throws ExceptionNotFoundException {
+    public BaseResponse crearCompra(@RequestBody CompraRequestDto compraRequestDto) throws ExceptionNotFoundException {
         Compra save = compraService.createCompra(compraRequestDto);
-        return new JsonResult(true, save, MESSAGE_SAVE);
+        return new BaseResponse(true, save, MESSAGE_SAVE);
     }
 
     @GetMapping(ALL_COMPRA)
-    public JsonResult getAllCompras() throws ExceptionNotFoundException{
+    public BaseResponse getAllCompras() throws ExceptionNotFoundException{
         List<CompraResponseDto> compras = compraService.findAll();
-        return new JsonResult(true, compras, MESSAGE_LIST);
+        return new BaseResponse(true, compras, MESSAGE_LIST);
     }
 
     @GetMapping(BY_COMPRA_ID)
-    public JsonResult getCompraById(@PathVariable Long id) throws ExceptionNotFoundException{
+    public BaseResponse getCompraById(@PathVariable Long id) throws ExceptionNotFoundException{
         CompraResponseDto compra = compraService.getByCompraId(id);
-        return new JsonResult(true, compra, MESSAGE_BY);
+        return new BaseResponse(true, compra, MESSAGE_BY);
     }
 
     @GetMapping(COMPRAS_BY_INGREDIENTE_ID)
-    public JsonResult obtenerComprasPorIngrediente(@PathVariable Long ingredienteId) throws ExceptionNotFoundException {
+    public BaseResponse obtenerComprasPorIngrediente(@PathVariable Long ingredienteId) throws ExceptionNotFoundException {
         List<Compra> compras = compraService.obtenerComprasPorIngrediente(ingredienteId);
         if (compras.isEmpty()) {
-            return new JsonResult(false, HttpStatus.BAD_REQUEST, "No hay compras"); // No hay compras
+            return new BaseResponse(false, HttpStatus.BAD_REQUEST, "No hay compras"); // No hay compras
         }
-        return new JsonResult(true, compras, MESSAGE_LIST); // Retorna las compras encontradas
+        return new BaseResponse(true, compras, MESSAGE_LIST); // Retorna las compras encontradas
     }
 
     @DeleteMapping(BY_COMPRA_ID)
-    public JsonResult deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
+    public BaseResponse deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
         compraService.deleteById(id);
-        return new JsonResult(true, null, MESSAGE_DELETE);
+        return new BaseResponse(true, null, MESSAGE_DELETE);
     }
 }

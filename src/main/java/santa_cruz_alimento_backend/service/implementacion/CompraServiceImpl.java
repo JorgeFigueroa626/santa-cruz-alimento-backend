@@ -44,7 +44,7 @@ public class CompraServiceImpl implements ICompraService {
                 Ingrediente ingrediente = ingredienteRepository.findById(iDto.getIngredienteId())
                         .orElseThrow(() -> new RuntimeException("Ingrediente no encontrado"));
 
-                ingrediente.setCantidad(ingrediente.getCantidad() + iDto.getCantidad());
+                ingrediente.setStock(ingrediente.getStock() + iDto.getCantidad());
 
                 DetalleCompra detalleCompra = new DetalleCompra();
                 detalleCompra.setIngrediente(ingrediente);

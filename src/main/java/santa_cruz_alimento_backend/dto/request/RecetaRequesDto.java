@@ -1,6 +1,7 @@
 package santa_cruz_alimento_backend.dto.request;
 
 import lombok.Data;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.List;
 
@@ -8,6 +9,8 @@ import java.util.List;
 public class RecetaRequesDto {
 
     private String name;
+
+    private ReplyStatus status;
 
     private List<DetalleRecetasRequestDto> ingredientes;
 }

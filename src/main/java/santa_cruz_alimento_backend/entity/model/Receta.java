@@ -3,11 +3,10 @@ package santa_cruz_alimento_backend.entity.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -19,6 +18,8 @@ public class Receta {
     private Long id;
 
     private String name;
+
+    private ReplyStatus status;
 
     @OneToMany(mappedBy = "receta", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Evita el ciclo al serializar

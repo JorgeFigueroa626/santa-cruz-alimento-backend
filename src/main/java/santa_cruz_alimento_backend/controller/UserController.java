@@ -5,12 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import santa_cruz_alimento_backend.dto.base.BaseResponse;
 import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
 import santa_cruz_alimento_backend.dto.request.UserRequestDto;
 import santa_cruz_alimento_backend.dto.response.UserResponseDto;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.service.interfaces.IUserService;
-import santa_cruz_alimento_backend.util.shared.JsonResult;
 
 import java.util.List;
 
@@ -28,50 +28,50 @@ public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PostMapping(SIGNUP)
-    public JsonResult registerUser(@RequestBody SignupRequestDto requestDto) throws ExceptionNotFoundException {
+    public BaseResponse registerUser(@RequestBody SignupRequestDto requestDto) throws ExceptionNotFoundException {
         if (userService.verificationCI(requestDto.getCi())) {
-            return new JsonResult(false, HttpStatus.NOT_ACCEPTABLE,"¡Usuario con CI ya registrado! Ingresa un nuevo usuario.");
+            return new BaseResponse(false, HttpStatus.NOT_ACCEPTABLE,"¡Usuario con CI ya registrado! Ingresa un nuevo usuario.");
         }
         UserRequestDto createUserRequestDto = userService.createUser(requestDto);
         if (createUserRequestDto == null) {
-            return new JsonResult(false, HttpStatus.BAD_REQUEST, "Usuario not creado");
+            return new BaseResponse(false, HttpStatus.BAD_REQUEST, "Usuario not creado");
         }
-        return new JsonResult(true, createUserRequestDto, MESSAGE_SAVE);
+        return new BaseResponse(true, createUserRequestDto, MESSAGE_SAVE);
     }
 
     @GetMapping(ALL_USER)
-    public JsonResult findAll() throws ExceptionNotFoundException{
+    public BaseResponse findAll() throws ExceptionNotFoundException{
         logger.info("Lista de usuarios: {} ", userService.findAll());
         List<UserResponseDto> users = userService.findAll();
-        return new  JsonResult(true, users, MESSAGE_LIST);
+        return new  BaseResponse(true, users, MESSAGE_LIST);
 
     }
 
     /*@GetMapping(ALL_USER_FILTERS)
-    public JsonResult getAllUser(
+    public BaseResponse getAllUser(
             @RequestParam(defaultValue = DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,
             @RequestParam(required = false) String text
     ) throws ExceptionNotFoundException {
         //List<User> category = userService.findAllFilters(text, page, size);
-        //return new JsonResult(true, category, MESSAGE_LIST);
+        //return new BaseResponse(true, category, MESSAGE_LIST);
         return null;
     }
 */
     @DeleteMapping(BY_USER_ID)
-    public JsonResult deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
+    public BaseResponse deleteById(@PathVariable Long id) throws ExceptionNotFoundException{
         userService.deleteById(id);
-        return new JsonResult(true, null, MESSAGE_DELETE);
+        return new BaseResponse(true, null, MESSAGE_DELETE);
     }
 
     @GetMapping(BY_USER_ID)
-    public JsonResult getById(@PathVariable Long id) throws ExceptionNotFoundException{
+    public BaseResponse getById(@PathVariable Long id) throws ExceptionNotFoundException{
         UserResponseDto user = userService.getByUserId(id);
-        return new JsonResult(true, user, MESSAGE_BY);
+        return new BaseResponse(true, user, MESSAGE_BY);
     }
 
     @PutMapping(BY_USER_ID)
-    public JsonResult updateById(@PathVariable Long id, @RequestBody SignupRequestDto requestDto) throws ExceptionNotFoundException, Exception{
+    public BaseResponse updateById(@PathVariable Long id, @RequestBody SignupRequestDto requestDto) throws ExceptionNotFoundException, Exception{
         /*try {
             boolean update = userService.updateByUserId(id, requestDto);
             if (update) {
@@ -83,7 +83,7 @@ public class UserController {
         }*/
 
         boolean update = userService.updateByUserId(id, requestDto);
-        return new JsonResult(true, update, MESSAGE_UPDATE);
+        return new BaseResponse(true, update, MESSAGE_UPDATE);
 
 
     }

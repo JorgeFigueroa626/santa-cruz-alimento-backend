@@ -2,6 +2,7 @@ package santa_cruz_alimento_backend.entity.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 @Entity
 @Data
@@ -13,5 +14,7 @@ public class Rol {
     private Long id;
 
     private String name;
+
+    private ReplyStatus status;
 
 }

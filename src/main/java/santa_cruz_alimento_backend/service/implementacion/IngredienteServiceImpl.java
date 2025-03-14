@@ -8,6 +8,7 @@ import santa_cruz_alimento_backend.entity.model.Ingrediente;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IIngredienteRepository;
 import santa_cruz_alimento_backend.service.interfaces.IIngredienteService;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,9 @@ public class IngredienteServiceImpl implements IIngredienteService {
             Ingrediente ingrediente = new Ingrediente();
             ingrediente.setName(requestDTO.getName());
             ingrediente.setCantidad(requestDTO.getCantidad());
+            ingrediente.setStock(0.0);
             ingrediente.setUnidad(requestDTO.getUnidad());
+            ingrediente.setStatus(ReplyStatus.ACTIVO);
             return ingredienteRepository.save(ingrediente);
         }catch (Exception e){
             throw  new ExceptionNotFoundException(e.getMessage());
@@ -41,7 +44,7 @@ public class IngredienteServiceImpl implements IIngredienteService {
         try {
 
             return ingredienteRepository.findAll().stream()
-                    .map(i -> new IngredientesResponseDto(i.getId(),i.getName(),i.getCantidad(), i.getUnidad()))
+                    .map(i -> new IngredientesResponseDto(i.getId(),i.getName(),i.getCantidad(),i.getStock(),i.getUnidad(), i.getStatus()))
                     .collect(Collectors.toList());
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
@@ -49,13 +52,15 @@ public class IngredienteServiceImpl implements IIngredienteService {
     }
 
     @Override
-    public Ingrediente updateById(Long id, Ingrediente ingrediente) throws ExceptionNotFoundException {
+    public Ingrediente updateById(Long id, IngredienteRequestDTO requestDTO) throws ExceptionNotFoundException {
         try {
-            Ingrediente ingredienteId = ingredienteRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con el id: " + id));
-            ingredienteId.setName(ingrediente.getName());
-            ingredienteId.setCantidad(ingrediente.getCantidad());
-            ingredienteId.setUnidad(ingrediente.getUnidad());
-            return ingredienteRepository.save(ingredienteId);
+            Ingrediente ingrediente = ingredienteRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con el id: " + id));
+            ingrediente.setName(requestDTO.getName());
+            ingrediente.setCantidad(requestDTO.getCantidad());
+            ingrediente.setStock(requestDTO.getStock());
+            ingrediente.setUnidad(requestDTO.getUnidad());
+            ingrediente.setStatus(requestDTO.getStatus());
+            return ingredienteRepository.save(ingrediente);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }
@@ -64,7 +69,9 @@ public class IngredienteServiceImpl implements IIngredienteService {
     @Override
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {
-            ingredienteRepository.deleteById(id);
+            Ingrediente ingrediente = ingredienteRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con el id: " + id));
+            ingrediente.setStatus(ReplyStatus.INACTIVO);
+            ingredienteRepository.save(ingrediente);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
         }

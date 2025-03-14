@@ -12,6 +12,7 @@ import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IRolRepository;
 import santa_cruz_alimento_backend.repository.IUserRepository;
 import santa_cruz_alimento_backend.service.interfaces.IUserService;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,7 @@ public class UserServiceImpl implements IUserService {
                     .orElseThrow(() -> new ExceptionNotFoundException("Rol no encontrado con ID: " + requestDto.getRol_id()));
 
             usuario.setRol(rolId);
+            usuario.setStatus(ReplyStatus.ACTIVO);
 
             Usuario createUsuario = userRepository.save(usuario);
             UserRequestDto userRequestDto = new UserRequestDto();
@@ -110,6 +112,7 @@ public class UserServiceImpl implements IUserService {
             usuario.setCi(requestDto.getCi());
             usuario.setPassword(new BCryptPasswordEncoder().encode(requestDto.getPassword()));
             //user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+            usuario.setStatus(requestDto.getStatus());
             usuario.setRol(rol);
 
             userRepository.save(usuario);
@@ -123,8 +126,10 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {
-
-            userRepository.deleteById(id);
+            Usuario usuario = userRepository.findById(id)
+                    .orElseThrow(() -> new ExceptionNotFoundException("Usuario con ID " + id + " no encontrado"));
+            usuario.setStatus(ReplyStatus.INACTIVO);
+            userRepository.save(usuario);
         }catch (Exception e){
             throw  new ExceptionNotFoundException(e.getMessage());
         }

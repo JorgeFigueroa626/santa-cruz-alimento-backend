@@ -39,6 +39,7 @@ public final class Constante {
 
     public static final String BUSINESS = "/business";
     public static final String ALL_BUSINESS = "/business";
+    public static final String ALL_BUSINESS_STATUS = "/business/status";
     public static final String BY_BUSINESS_ID = "/business/{id}";
 
     public static final String INGREDIENTE = "/ingrediente";
@@ -51,6 +52,7 @@ public final class Constante {
     public static final String BY_NAME_RECETA = "/receta/{nombre}/ingrediente";
 
     public static final String PRODUCT = "/product";
+    public static final String PRODUCTS = "/products";
     public static final String ALL_PRODUCT = "/product";
     public static final String BY_PRODUCT_ID = "/product/{id}";
 

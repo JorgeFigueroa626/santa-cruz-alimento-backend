@@ -23,7 +23,7 @@ public class Category {
 
     private String name;
 
-    private ReplyStatus status;
+    private Integer status;
 
     /*@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Evita el ciclo al serializar

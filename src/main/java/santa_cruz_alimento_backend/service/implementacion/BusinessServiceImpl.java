@@ -22,7 +22,7 @@ public class BusinessServiceImpl implements IBusinessService {
         try {
             Business business = new Business();
             business.setName(requestDto.getName());
-            business.setStatus(ReplyStatus.ACTIVO);
+            business.setStatus(ReplyStatus.ACTIVE.getValue());
             return businessRepository.save(business);
         }catch ( Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
@@ -67,7 +67,7 @@ public class BusinessServiceImpl implements IBusinessService {
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {
             Business businessId = businessRepository.findById(id).orElseThrow(() -> new RuntimeException("Negocio no encontrado con id: " + id));
-            businessId.setStatus(ReplyStatus.INACTIVO);
+            businessId.setStatus(ReplyStatus.INACTIVE.getValue());
             businessRepository.save(businessId);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());

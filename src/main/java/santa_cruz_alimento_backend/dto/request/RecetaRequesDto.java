@@ -10,7 +10,7 @@ public class RecetaRequesDto {
 
     private String name;
 
-    private ReplyStatus status;
+    private Integer status;
 
     private List<DetalleRecetasRequestDto> ingredientes;
 }

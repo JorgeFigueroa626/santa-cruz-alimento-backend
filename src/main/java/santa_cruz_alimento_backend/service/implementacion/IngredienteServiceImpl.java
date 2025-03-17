@@ -27,7 +27,7 @@ public class IngredienteServiceImpl implements IIngredienteService {
             ingrediente.setCantidad(requestDTO.getCantidad());
             ingrediente.setStock(0.0);
             ingrediente.setUnidad(requestDTO.getUnidad());
-            ingrediente.setStatus(ReplyStatus.ACTIVO);
+            ingrediente.setStatus(ReplyStatus.ACTIVE.getValue());
             return ingredienteRepository.save(ingrediente);
         }catch (Exception e){
             throw  new ExceptionNotFoundException(e.getMessage());
@@ -70,7 +70,7 @@ public class IngredienteServiceImpl implements IIngredienteService {
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {
             Ingrediente ingrediente = ingredienteRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Ingrediente no encontrado con el id: " + id));
-            ingrediente.setStatus(ReplyStatus.INACTIVO);
+            ingrediente.setStatus(ReplyStatus.INACTIVE.getValue());
             ingredienteRepository.save(ingrediente);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());

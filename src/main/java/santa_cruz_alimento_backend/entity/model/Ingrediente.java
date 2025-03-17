@@ -25,7 +25,7 @@ public class Ingrediente {
 
     private String unidad;
 
-    private ReplyStatus status;
+    private Integer status;
 
     @OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // ✅ Evita la serialización infinita

@@ -14,5 +14,5 @@ public class IngredienteRequestDTO {
 
     private String unidad;
 
-    private ReplyStatus status;
+    private Integer status;
 }

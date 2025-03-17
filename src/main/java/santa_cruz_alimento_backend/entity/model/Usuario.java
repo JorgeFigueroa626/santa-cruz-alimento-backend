@@ -31,7 +31,7 @@ public class Usuario implements UserDetails {
 
     private String password;
 
-    private ReplyStatus status;
+    private Integer status;
 
     @ManyToOne
     @JoinColumn(name = "rol_id", referencedColumnName = "id", nullable = false)

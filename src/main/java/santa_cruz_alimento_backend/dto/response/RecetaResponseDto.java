@@ -10,6 +10,6 @@ import java.util.List;
 public class RecetaResponseDto {
     private Long id;
     private String name;
-    private ReplyStatus status;
+    private Integer status;
     private List<DetalleRecetaResponseDto> DetalleRecetas;
 }

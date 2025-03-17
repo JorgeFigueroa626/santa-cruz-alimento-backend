@@ -10,5 +10,5 @@ public class CategoryRequestDto {
 
     private String name;
 
-    private ReplyStatus status;
+    private Integer status;
 }

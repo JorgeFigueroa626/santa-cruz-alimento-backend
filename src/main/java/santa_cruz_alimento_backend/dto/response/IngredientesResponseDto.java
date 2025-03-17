@@ -12,7 +12,7 @@ public class IngredientesResponseDto {
     private Double cantidad;
     private Double stock;
     private String unidad;
-    private ReplyStatus status;
+    private Integer status;
 
 
 }

@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements ICategoryService {
         try {
             Category category = new Category();
             category.setName(requestDto.getName());
-            category.setStatus(ReplyStatus.ACTIVO);
+            category.setStatus(ReplyStatus.ACTIVE.getValue());
             return categoryRepository.save(category);
         }catch (Exception e){
             throw  new ExceptionNotFoundException(e.getMessage());
@@ -105,7 +105,7 @@ public class CategoryServiceImpl implements ICategoryService {
                     .orElseThrow(() -> new ExceptionNotFoundException("Categoría no encontrada"));
 
             // Cambiar el estado a INACTIVO
-            category.setStatus(ReplyStatus.INACTIVO);
+            category.setStatus(ReplyStatus.INACTIVE.ordinal());
 
             // Guardar la categoría con el nuevo estado
             categoryRepository.save(category);

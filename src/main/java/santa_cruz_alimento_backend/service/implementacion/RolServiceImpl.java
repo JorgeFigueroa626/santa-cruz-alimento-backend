@@ -23,7 +23,7 @@ public class RolServiceImpl implements IRolService {
         try {
             Rol rol = new Rol();
             rol.setName(requestDto.getName());
-            rol.setStatus(ReplyStatus.ACTIVO);
+            rol.setStatus(ReplyStatus.ACTIVE.getValue());
             return rolRepository.save(rol);
         }catch ( Exception e){
             throw new ExceptionNotFoundException(e.getMessage());
@@ -63,7 +63,7 @@ public class RolServiceImpl implements IRolService {
     public void deleteByRolId(Long id) throws ExceptionNotFoundException {
         try {
             Rol updateId = rolRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Rol no encontrado con id: " + id));
-            updateId.setStatus(ReplyStatus.INACTIVO);
+            updateId.setStatus(ReplyStatus.INACTIVE.getValue());
             rolRepository.save(updateId);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());

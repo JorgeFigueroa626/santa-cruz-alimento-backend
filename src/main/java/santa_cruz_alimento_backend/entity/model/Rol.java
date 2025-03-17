@@ -15,6 +15,6 @@ public class Rol {
 
     private String name;
 
-    private ReplyStatus status;
+    private Integer status;
 
 }

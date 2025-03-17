@@ -82,7 +82,7 @@ public class RecetaServiceImpl implements IRecetaService {
             }).collect(Collectors.toList());
 
             receta.setDetalleRecetas(detallesDto);
-            receta.setStatus(ReplyStatus.ACTIVO);
+            receta.setStatus(ReplyStatus.ACTIVE.getValue());
 
             return recetaRepository.save(receta);
         }catch (Exception e){
@@ -235,7 +235,7 @@ public class RecetaServiceImpl implements IRecetaService {
         try {
             Receta receta = recetaRepository.findById(id)
                     .orElseThrow(() -> new ExceptionNotFoundException("Receta no encontrada con el ID : " + id));
-            receta.setStatus(ReplyStatus.INACTIVO);
+            receta.setStatus(ReplyStatus.INACTIVE.getValue());
             recetaRepository.save(receta);
         }catch (Exception e){
             throw new ExceptionNotFoundException(e.getMessage());

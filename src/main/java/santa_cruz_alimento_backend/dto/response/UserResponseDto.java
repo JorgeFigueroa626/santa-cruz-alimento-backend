@@ -14,7 +14,7 @@ public class UserResponseDto {
 
     private String password;
 
-    private ReplyStatus status;
+    private Integer status;
 
     private Long rol_id;
 

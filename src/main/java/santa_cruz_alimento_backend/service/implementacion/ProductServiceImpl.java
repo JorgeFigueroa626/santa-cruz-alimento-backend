@@ -15,7 +15,7 @@ import santa_cruz_alimento_backend.repository.IProductRepository;
 import santa_cruz_alimento_backend.repository.IRecetaRepository;
 import santa_cruz_alimento_backend.service.interfaces.IFirebaseStorageService;
 import santa_cruz_alimento_backend.service.interfaces.IProductService;
-import santa_cruz_alimento_backend.util.enums.ReplyStatu;
+import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 import santa_cruz_alimento_backend.util.shared.Container;
 
 import java.util.List;
@@ -48,7 +48,7 @@ public class ProductServiceImpl implements IProductService {
             producto.setDescription(productoRequestDTO.getDescription());
             producto.setPrice(productoRequestDTO.getPrice());
             producto.setStock(0);
-            producto.setStatus(ReplyStatu.ACTIVE.getValue());
+            producto.setStatus(ReplyStatus.ACTIVE.getValue());
 
             Category category = categoryRepository.findById(productoRequestDTO.getCategoryId())
                     .orElseThrow(() -> new ExceptionNotFoundException("Categoria no encontrada con el Id : " + productoRequestDTO.getCategoryId()));
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements IProductService {
             producto.setDescription(productoRequestDTO.getDescription());
             producto.setPrice(productoRequestDTO.getPrice());
             producto.setStock(0);
-            producto.setStatus(ReplyStatu.ACTIVE.getValue());
+            producto.setStatus(ReplyStatus.ACTIVE.getValue());
 
             Category category = categoryRepository.findById(productoRequestDTO.getCategoryId())
                     .orElseThrow(() -> new ExceptionNotFoundException("Categoria no encontrada con el Id : " + productoRequestDTO.getCategoryId()));
@@ -155,7 +155,7 @@ public class ProductServiceImpl implements IProductService {
     public boolean deleteByProductId(Long id) throws ExceptionNotFoundException{
         try {
             Product productId = productRepository.findById(id).orElseThrow(() -> new ExceptionNotFoundException("Producto no encontrado con id: " + id));
-            productId.setStatus(ReplyStatu.INACTIVE.getValue());
+            productId.setStatus(ReplyStatus.INACTIVE.getValue());
             productRepository.save(productId);
             return true;
         }catch (ExceptionNotFoundException e){

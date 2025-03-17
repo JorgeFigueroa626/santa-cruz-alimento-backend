@@ -60,7 +60,7 @@ public class UserServiceImpl implements IUserService {
                     .orElseThrow(() -> new ExceptionNotFoundException("Rol no encontrado con ID: " + requestDto.getRol_id()));
 
             usuario.setRol(rolId);
-            usuario.setStatus(ReplyStatus.ACTIVO);
+            usuario.setStatus(ReplyStatus.ACTIVE.getValue());
 
             Usuario createUsuario = userRepository.save(usuario);
             UserRequestDto userRequestDto = new UserRequestDto();
@@ -128,7 +128,7 @@ public class UserServiceImpl implements IUserService {
         try {
             Usuario usuario = userRepository.findById(id)
                     .orElseThrow(() -> new ExceptionNotFoundException("Usuario con ID " + id + " no encontrado"));
-            usuario.setStatus(ReplyStatus.INACTIVO);
+            usuario.setStatus(ReplyStatus.INACTIVE.getValue());
             userRepository.save(usuario);
         }catch (Exception e){
             throw  new ExceptionNotFoundException(e.getMessage());

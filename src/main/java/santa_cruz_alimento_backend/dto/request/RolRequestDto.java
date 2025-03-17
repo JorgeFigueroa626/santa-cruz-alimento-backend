@@ -7,5 +7,5 @@ import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 public class RolRequestDto {
     private String name;
 
-    private ReplyStatus status;
+    private Integer status;
 }

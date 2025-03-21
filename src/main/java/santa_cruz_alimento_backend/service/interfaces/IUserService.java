@@ -11,15 +11,15 @@ import java.util.List;
 @Service
 public interface IUserService {
 
-    UserRequestDto createAdmin(SignupRequestDto requestDto) throws ExceptionNotFoundException;
+    //UserRequestDto createAdmin(SignupRequestDto requestDto) throws ExceptionNotFoundException;
 
+    /// authentications
     UserRequestDto createUser(SignupRequestDto signupDto) throws ExceptionNotFoundException;
 
     boolean verificationCI(String ci) throws ExceptionNotFoundException;
 
+    /// users
     List<UserResponseDto> findAll() throws ExceptionNotFoundException;
-
-    //List<UserResponseDto> findAllFilters(String text, Integer page, Integer size) throws ExceptionNotFoundException;
 
     UserResponseDto getByUserId(Long id) throws ExceptionNotFoundException;
 

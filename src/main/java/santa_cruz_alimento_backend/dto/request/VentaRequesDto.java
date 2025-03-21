@@ -16,5 +16,5 @@ public class VentaRequesDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/La_Paz")
     private Timestamp fechaVenta;
 
-    private List<DetalleVentasRequestDto> detalles;
+    private List<DetalleVentasRequestDto> detallesVentas;
 }

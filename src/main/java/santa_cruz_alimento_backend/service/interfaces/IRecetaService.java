@@ -13,14 +13,10 @@ import java.util.List;
 @Service
 public interface IRecetaService {
 
-    boolean addReceta(Receta receta) throws IOException;
-
-
+    ///
     Receta createReceta(RecetaRequesDto dto) throws ExceptionNotFoundException;
 
     List<RecetaResponseDto> findAll();
-
-    //List<Ingrediente> getIngredientesByNameReceta(String receta) throws ExceptionNotFoundException;
 
     List<IngredientesResponseDto> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException;
 

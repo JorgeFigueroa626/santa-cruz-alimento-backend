@@ -17,7 +17,6 @@ public interface IBusinessService {
 
     List<Business> findAll() throws ExceptionNotFoundException;
 
-
     Business updateById(Long id, BusinessRequestDto business) throws ExceptionNotFoundException;
 
     void deleteById(Long id) throws ExceptionNotFoundException;

@@ -13,4 +13,5 @@ public class RecetaRequesDto {
     private Integer status;
 
     private List<DetalleRecetasRequestDto> ingredientes;
+    //private List<DetalleRecetasRequestDto> detallesRecetas;
 }

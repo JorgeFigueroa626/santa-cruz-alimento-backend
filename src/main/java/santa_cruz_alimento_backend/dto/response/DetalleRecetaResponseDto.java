@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class DetalleRecetaResponseDto {
     private Long id;
+    private Long ingredienteId;
     private String nombre_ingrediente;
     private Double cantidad;
     private String unidad;

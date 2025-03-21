@@ -16,15 +16,11 @@ public interface ICompraService {
 
     List<CompraResponseDto> findAll() throws ExceptionNotFoundException;
 
-    //List<Ingrediente> getIngredientesByNameReceta(String receta);
-
-    //List<IngredienteDTO> getRecetaByNombre(String nombreReceta);
-
     CompraResponseDto getByCompraId(Long id) throws ExceptionNotFoundException;
 
     List<Compra> obtenerComprasPorIngrediente(Long id) throws ExceptionNotFoundException;
 
-    boolean updateById(Long id, Compra compra) throws ExceptionNotFoundException;
+    boolean updateById(Long id, CompraRequestDto requestDto) throws ExceptionNotFoundException;
 
     void deleteById(Long id) throws ExceptionNotFoundException;
 }

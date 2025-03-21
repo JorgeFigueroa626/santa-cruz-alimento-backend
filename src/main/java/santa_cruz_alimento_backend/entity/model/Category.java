@@ -27,6 +27,6 @@ public class Category {
 
     /*@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Evita el ciclo al serializar
-    private List<DetalleBiscochuelo> detalleBiscochuelo = new ArrayList<>();*/
+    private List<DetalleBase> detalleBase = new ArrayList<>();*/
 
 }

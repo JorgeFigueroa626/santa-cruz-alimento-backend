@@ -19,6 +19,7 @@ target/
 *.iml
 *.ipr
 src/main/resources/web-ecommerce-dcdaa-firebase-adminsdk-ri8d5-074b9b532e.json
+src/main/resources/web-ecommerce-dcdaa-firebase-adminsdk-ri8d5-8b506fb565.json
 
 ### NetBeans ###
 /nbproject/private/

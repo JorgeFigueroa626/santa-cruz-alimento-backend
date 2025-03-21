@@ -11,8 +11,8 @@ import santa_cruz_alimento_backend.service.interfaces.IProduccionService;
 
 import java.util.List;
 
-import static santa_cruz_alimento_backend.constante.Constante.*;
-import static santa_cruz_alimento_backend.util.shared.ReplyMessage.*;
+import static santa_cruz_alimento_backend.constante.ConstantEntity.*;
+import static santa_cruz_alimento_backend.util.message.ReplyMessage.*;
 
 @RestController
 @RequestMapping(API)

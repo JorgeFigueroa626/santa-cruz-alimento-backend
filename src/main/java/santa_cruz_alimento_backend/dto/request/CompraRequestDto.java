@@ -12,5 +12,5 @@ public class CompraRequestDto {
 
     private Double total;
 
-    private List<DetalleCompraDTO> detalleCompras;
+    private List<DetalleCompraDTO> detallesCompras;
 }

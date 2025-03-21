@@ -3,8 +3,6 @@ package santa_cruz_alimento_backend.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,19 +11,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import santa_cruz_alimento_backend.dto.base.BaseResponse;
 import santa_cruz_alimento_backend.dto.request.AuthRequestDto;
 import santa_cruz_alimento_backend.dto.response.AuthResponseDto;
 import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
 import santa_cruz_alimento_backend.dto.request.UserRequestDto;
 import santa_cruz_alimento_backend.entity.model.Usuario;
+import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IUserRepository;
 import santa_cruz_alimento_backend.security.JWTUtil;
 import santa_cruz_alimento_backend.security.UserDetailsServiceImpl;
 import santa_cruz_alimento_backend.service.interfaces.IUserService;
+import santa_cruz_alimento_backend.util.message.ReplyMessage;
 
 import java.util.Optional;
 
-import static santa_cruz_alimento_backend.constante.Constante.*;
+import static santa_cruz_alimento_backend.constante.ConstantEntity.*;
 
 @RestController
 @RequestMapping(AUTH)
@@ -49,26 +50,18 @@ public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping(SIGNUP_USER)
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequestDto requestDto){
-        logger.info("Solicitud recibida para crear usuario: {}", requestDto.getFull_name(), requestDto.getCi(), requestDto.getPassword(), requestDto.getRol_id());
-        if (userService.verificationCI(requestDto.getCi())) {
-            return new ResponseEntity<>("Users already exist with thin CI", HttpStatus.NOT_ACCEPTABLE);
-        }
+    public BaseResponse registerUser(@RequestBody SignupRequestDto requestDto){
         UserRequestDto createUserRequestDto = userService.createUser(requestDto);
-        if (createUserRequestDto == null) {
-            return new ResponseEntity<>("User not create", HttpStatus.BAD_REQUEST);
-        }
-        logger.info("Usuario creado : {}", createUserRequestDto);
-        return ResponseEntity.ok(createUserRequestDto);
+        return new BaseResponse(true, createUserRequestDto, ReplyMessage.MESSAGE_SAVE);
     }
 
     @PostMapping(LOGIN)
-    public AuthResponseDto authentication(@RequestBody AuthRequestDto requestDto) throws BadCredentialsException {
-        logger.info("Solicitud recibida para iniciar session: {}", requestDto.getCi(), requestDto.getPassword());
+    public BaseResponse authentication(@RequestBody AuthRequestDto requestDto) throws BadCredentialsException, ExceptionNotFoundException {
         try {
+            logger.info("Solicitud de inicio session: {}", requestDto);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getCi(), requestDto.getPassword()));
-        }catch (BadCredentialsException e){
-            throw  new BadCredentialsException("Incorrect CI o Password");
+        }catch (Exception e){
+            throw  new ExceptionNotFoundException("Incorrect CI o Password");
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(requestDto.getCi());
         Optional<Usuario> optionalUser = userRepository.findFirstByCi(userDetails.getUsername());
@@ -79,7 +72,7 @@ public class AuthController {
             authResponseDto.setRol(optionalUser.get().getRol().getName());
             authResponseDto.setToken(jwt);
         }
-        logger.info("Inicio session el usuario : {}", authResponseDto);
-        return authResponseDto;
+        logger.info("Inicio session : {}", authResponseDto);
+        return new BaseResponse(true, authResponseDto, ReplyMessage.MESSAGE_AUTHENTICATION);
     }
 }

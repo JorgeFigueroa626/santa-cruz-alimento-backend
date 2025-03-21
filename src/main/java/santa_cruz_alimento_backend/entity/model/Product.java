@@ -31,19 +31,25 @@ public class Product {
 
     private Integer status;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    /*@ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
+    @JsonIgnore*/
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    /*@ManyToOne
+    @JoinColumn(name = "subproduct_id", referencedColumnName = "id", nullable = false)
+    private SubProduct subProduct;*/
+
+
+    @ManyToOne
     @JoinColumn(name = "business_id", referencedColumnName = "id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
     private Business business;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "receta_id", referencedColumnName = "id", nullable = false)
     private Receta receta; // ✅ Un Producto tiene UNA Receta
 
@@ -61,6 +67,9 @@ public class Product {
         productDto.setStock(stock);
         productDto.setStatus(status);
         productDto.setCategoryId(category.getId());
+        productDto.setCategory_name(category.getName());
+        /*productDto.setSubproductId(subProduct.getId());
+        productDto.setSubproduct_name(subProduct.getName());*/
         productDto.setBusinessId(business.getId());
         productDto.setBusiness_name(business.getName());
         productDto.setRecetaId(receta.getId());

@@ -13,5 +13,5 @@ public class VentaResponseDto {
     private Timestamp fechaVenta;
     private Double total;
     private String usuario_nombre; // Para devolver el nombre del usuario
-    private List<DetalleVentasResponseDto> detalles;
+    private List<DetalleVentasResponseDto> detallesVentas;
 }

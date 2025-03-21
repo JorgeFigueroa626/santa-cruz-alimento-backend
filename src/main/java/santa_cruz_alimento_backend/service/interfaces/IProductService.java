@@ -11,18 +11,18 @@ import java.util.List;
 @Service
 public interface IProductService {
 
-   // public boolean addProduct(ProductDto productDto) throws IOException;
-
     ///
-    Product createProducto(ProductoRequestDTO productoRequestDTO) throws ExceptionNotFoundException;
-
     Product createProductos(ProductoRequestDTO productoRequestDTO) throws ExceptionNotFoundException;
 
-    public List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException;
+    List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException;
+
+    List<ProductoResponseDTO> getProduct() throws ExceptionNotFoundException;
 
     Product getByProductById(Long productId) throws ExceptionNotFoundException;
 
+   ProductoResponseDTO getProductById(Long productId) throws ExceptionNotFoundException;
+
     Product updateProduct(Long productId, ProductoRequestDTO productDto) throws ExceptionNotFoundException;
 
-    public boolean deleteByProductId(Long id) throws ExceptionNotFoundException;
+    boolean deleteByProductId(Long id) throws ExceptionNotFoundException;
 }

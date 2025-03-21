@@ -5,7 +5,6 @@ import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 @Data
 public class BusinessRequestDto {
-    private Long id;
 
     private String name;
 

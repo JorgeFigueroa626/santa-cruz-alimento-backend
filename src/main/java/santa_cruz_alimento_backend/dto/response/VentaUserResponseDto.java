@@ -15,5 +15,5 @@ public class VentaUserResponseDto {
     private Double total;
     private Long usuarioId;
     private String usuario_nombre; // Para devolver el nombre del usuario
-    private List<DetalleVentasResponseDto> detalles;
+    private List<DetalleVentasResponseDto> detallesVentas;
 }

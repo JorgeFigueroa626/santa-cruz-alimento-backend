@@ -3,9 +3,7 @@ package santa_cruz_alimento_backend.entity.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-import santa_cruz_alimento_backend.dto.response.ProductoResponseDTO;
+import santa_cruz_alimento_backend.dto.response.product.ProductoResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +20,9 @@ public class Product {
     private String name;
 
     private String image;
+
+    @Column(length = 2)
+    private String tamaño;
 
     private String description;
 
@@ -40,11 +41,6 @@ public class Product {
     @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
     private Category category;
 
-    /*@ManyToOne
-    @JoinColumn(name = "subproduct_id", referencedColumnName = "id", nullable = false)
-    private SubProduct subProduct;*/
-
-
     @ManyToOne
     @JoinColumn(name = "business_id", referencedColumnName = "id", nullable = false)
     private Business business;
@@ -56,6 +52,23 @@ public class Product {
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // ✅ Evita la serialización infinita
     private List<DetalleVenta> detallesVentas = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", image='" + image + '\'' +
+                ", tamaño='" + tamaño + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                ", status=" + status +
+                ", category=" + category +
+                ", business=" + business +
+                ", receta=" + receta +
+                '}';
+    }
 
     public ProductoResponseDTO productoDto(){
         ProductoResponseDTO productDto = new ProductoResponseDTO();

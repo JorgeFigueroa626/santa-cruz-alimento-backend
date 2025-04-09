@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import santa_cruz_alimento_backend.dto.response.UserResponseDto;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
+import santa_cruz_alimento_backend.dto.response.user.UserResponseDto;
 
 import java.util.Collection;
 import java.util.List;

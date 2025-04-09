@@ -13,6 +13,9 @@ public class DetalleProduccion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nombre_base")
+    private String nombreBase;
+
     private Double cantidad;
 
     private String unidad;
@@ -26,4 +29,14 @@ public class DetalleProduccion {
     @JsonBackReference  // Evita la serialización infinita
     private Produccion produccion;
 
+    @Override
+    public String toString() {
+        return "DetalleProduccion{" +
+                "id=" + id +
+                ", cantidad=" + cantidad +
+                ", unidad='" + unidad + '\'' +
+                ", ingrediente=" + ingrediente +
+                ", produccion=" + produccion +
+                '}';
+    }
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import santa_cruz_alimento_backend.dto.response.VentaResponseDto;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -33,4 +32,13 @@ public class Venta {
     @JsonManagedReference // Evita el ciclo al serializar
     private List<DetalleVenta> detallesVentas = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "Venta{" +
+                "id=" + id +
+                ", fechaVenta=" + fechaVenta +
+                ", total=" + total +
+                ", usuario=" + usuario +
+                '}';
+    }
 }

@@ -1,8 +1,8 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.ProductoRequestDTO;
-import santa_cruz_alimento_backend.dto.response.ProductoResponseDTO;
+import santa_cruz_alimento_backend.dto.request.product.ProductoRequestDTO;
+import santa_cruz_alimento_backend.dto.response.product.ProductoResponseDTO;
 import santa_cruz_alimento_backend.entity.model.Product;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
@@ -16,7 +16,7 @@ public interface IProductService {
 
     List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException;
 
-    List<ProductoResponseDTO> getProduct() throws ExceptionNotFoundException;
+    List<ProductoResponseDTO> getAllProduct() throws ExceptionNotFoundException;
 
     Product getByProductById(Long productId) throws ExceptionNotFoundException;
 

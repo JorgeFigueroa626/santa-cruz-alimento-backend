@@ -1,9 +1,8 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.CompraRequestDto;
-import santa_cruz_alimento_backend.dto.response.CompraResponseDto;
-import santa_cruz_alimento_backend.dto.response.DetalleCompraResponseDto;
+import santa_cruz_alimento_backend.dto.request.purchase.CompraRequestDto;
+import santa_cruz_alimento_backend.dto.response.purchase.CompraResponseDto;
 import santa_cruz_alimento_backend.entity.model.Compra;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 

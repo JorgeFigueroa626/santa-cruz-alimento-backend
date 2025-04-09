@@ -1,20 +1,28 @@
 package santa_cruz_alimento_backend.service.implementation;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.*;
-import santa_cruz_alimento_backend.dto.response.*;
+import santa_cruz_alimento_backend.dto.request.recipe.DetalleRecetasRequestDto;
+import santa_cruz_alimento_backend.dto.request.recipe.RecetaRequesDto;
+import santa_cruz_alimento_backend.dto.response.base.DetalleBaseResponseDto;
+import santa_cruz_alimento_backend.dto.response.ingredient.IngredienteResponseDto;
+import santa_cruz_alimento_backend.dto.response.recipe.DetalleRecetaResponseDto;
+import santa_cruz_alimento_backend.dto.response.recipe.RecetaResponseDto;
 import santa_cruz_alimento_backend.entity.model.*;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
+import santa_cruz_alimento_backend.mapper.IRecipeMapper;
+import santa_cruz_alimento_backend.repository.IBaseRepository;
 import santa_cruz_alimento_backend.repository.IDetalleRecetasRepository;
 import santa_cruz_alimento_backend.repository.IIngredienteRepository;
 import santa_cruz_alimento_backend.repository.IRecetaRepository;
 import santa_cruz_alimento_backend.service.interfaces.IRecetaService;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
+import santa_cruz_alimento_backend.util.constant.ReplyStatus;
 import santa_cruz_alimento_backend.util.message.ReplyMessage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -30,121 +38,53 @@ public class RecetaServiceImpl implements IRecetaService {
     private IIngredienteRepository ingredienteRepository;
 
     @Autowired
-    private IDetalleRecetasRepository detalleRecetasRepository;
+    private IBaseRepository baseRepository;
+
+    @Autowired
+    private IRecipeMapper recipeMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(RecetaServiceImpl.class);
 
+    @Transactional
     @Override
     public Receta createReceta(RecetaRequesDto recetaRequestDTO) throws ExceptionNotFoundException {
         try {
             logger.info("Solicitud de registro: {}", recetaRequestDTO);
             Receta receta = new Receta();
             receta.setName(recetaRequestDTO.getName());
+            receta.setStatus(ReplyStatus.ACTIVE.getValue());
 
-            List<DetalleRecetas> detallesDto = recetaRequestDTO.getIngredientes().stream().map(iDto -> {
-                Ingrediente ingrediente = ingredienteRepository.findById(iDto.getIngredienteId())
-                        .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_INGREDIENT_WITH_ID + iDto.getIngredienteId()));
+            List<DetalleRecetas> detallesDto = recetaRequestDTO.getDetalleRecetas().stream().map(iDto -> {
+                Base base = baseRepository.findById(iDto.getBaseId())
+                        .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_BASE_WITH_ID + iDto.getBaseId()));
 
-                DetalleRecetas recetaIngrediente = new DetalleRecetas();
-                recetaIngrediente.setIngrediente(ingrediente);
-                recetaIngrediente.setCantidad(iDto.getCantidad());
-                recetaIngrediente.setUnidad(iDto.getUnidad());
-                recetaIngrediente.setReceta(receta);
-                return recetaIngrediente;
+                DetalleRecetas detalleRecetas = new DetalleRecetas();
+                detalleRecetas.setBase(base);
+                detalleRecetas.setReceta(receta);
+                return detalleRecetas;
             }).collect(Collectors.toList());
 
             receta.setDetalleRecetas(detallesDto);
-            receta.setStatus(ReplyStatus.ACTIVE.getValue());
 
             Receta save = recetaRepository.save(receta);
             logger.info("Receta registrado : {}", save);
             return save;
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.info(e.getMessage());
             throw new ExceptionNotFoundException(e.getMessage());
         }
     }
 
+
     @Override
     public List<RecetaResponseDto> findAll() throws ExceptionNotFoundException {
         try {
-            //return recetaRepository.findAll();
             List<Receta> recetas = recetaRepository.findAll();
+            if (recetas.isEmpty()) {
+                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_LIST_EMPTY);
+            }
+            return recipeMapper.toRecipeResponseDtoList(recetas);
 
-            return recetas.stream().map(receta -> {
-                RecetaResponseDto dto = new RecetaResponseDto();
-                dto.setId(receta.getId());
-                dto.setName(receta.getName());
-                dto.setStatus(receta.getStatus());
-
-                // Convertir detalles de receta a DTO
-                List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
-                    DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
-                    detalleDto.setId(detalle.getId());
-                    detalleDto.setIngredienteId(detalle.getIngrediente().getId());
-                    detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
-                    detalleDto.setCantidad(detalle.getCantidad());
-                    detalleDto.setUnidad(detalle.getUnidad());
-                    return detalleDto;
-                }).collect(Collectors.toList());
-
-                dto.setDetalleRecetas(detallesDto);
-
-                return dto;
-            }).collect(Collectors.toList());
-
-        }catch (Exception e){
-            throw new ExceptionNotFoundException(e.getMessage());
-        }
-    }
-
-    @Override
-    public  List<IngredientesResponseDto> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException {
-        try {
-            Receta receta = recetaRepository.findByName(nombreReceta)
-                    .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_NAME + nombreReceta));
-
-            return receta.getDetalleRecetas().stream()
-                    .map(ri -> new IngredientesResponseDto(
-                            ri.getId(),
-                            ri.getIngrediente().getName(),
-                            ri.getCantidad(),
-                            ri.getIngrediente().getStock(),
-                            ri.getUnidad(),
-                            ri.getIngrediente().getStatus()
-                            ))
-                    .collect(Collectors.toList());
-        }catch (Exception e){
-            throw new ExceptionNotFoundException(e.getMessage());
-        }
-    }
-
-
-    @Override
-    public RecetaResponseDto getByRecetaId(Long id) throws ExceptionNotFoundException {
-        try {
-            Receta receta = recetaRepository.findById(id)
-                    .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + id));
-
-            RecetaResponseDto dto = new RecetaResponseDto();
-            dto.setId(receta.getId());
-            dto.setName(receta.getName());
-            dto.setStatus(receta.getStatus());
-
-            // Convertir detalles de recera a DTO
-            List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
-                DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
-                detalleDto.setId(detalle.getId());
-                detalleDto.setIngredienteId(detalle.getIngrediente().getId());
-                detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
-                detalleDto.setCantidad(detalle.getCantidad());
-                detalleDto.setUnidad(detalle.getUnidad());
-                return detalleDto;
-            }).collect(Collectors.toList());
-
-            dto.setDetalleRecetas(detallesDto);
-
-            return dto;
         }catch (Exception e){
             logger.error(e.getMessage());
             throw new ExceptionNotFoundException(e.getMessage());
@@ -152,8 +92,118 @@ public class RecetaServiceImpl implements IRecetaService {
     }
 
     @Override
+    public  List<IngredienteResponseDto> getRecetaByNombre(String nombreReceta) throws ExceptionNotFoundException {
+        /*try {
+            Receta receta = recetaRepository.findByName(nombreReceta)
+                    .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_NAME + nombreReceta));
+
+            return receta.getDetalleRecetas().stream()
+                    .map(ri -> new IngredienteResponseDto(
+                            ri.getId(),
+                            ri.getIngrediente().getName(),
+                            ri.getCantidad(),
+                            ri.getUnidad(),
+                            ri.getIngrediente().getStatus()
+                            ))
+                    .collect(Collectors.toList());
+        }catch (Exception e){
+            throw new ExceptionNotFoundException(e.getMessage());
+        }*/
+        return null;
+    }
+
+
+    public RecetaResponseDto getByRecetaId(Long id) throws ExceptionNotFoundException {
+        try {
+            Receta receta = recetaRepository.findById(id)
+                    .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + id));
+
+            // Mapeo de Receta a DTO
+            RecetaResponseDto dto = recipeMapper.toRecipeResponseDto(receta);
+
+            // Mapeo de DetalleRecetas
+            List<DetalleRecetaResponseDto> detalleRecetasDto = receta.getDetalleRecetas()
+                    .stream()
+                    .map(detalleReceta -> {
+                        DetalleRecetaResponseDto detalleRecetaDto = recipeMapper.toRecipeDetailResponseDto(detalleReceta);
+
+                        // Mapeo de DetalleBase dentro de DetalleRecetas
+                        List<DetalleBaseResponseDto> detalleBasesDto = detalleReceta.getBase().getDetalleBases()
+                                .stream()
+                                .map(recipeMapper::toDetalleBaseResponseDto)
+                                .collect(Collectors.toList());
+
+                        detalleRecetaDto.setDetalleBases(detalleBasesDto);
+                        return detalleRecetaDto;
+                    })
+                    .collect(Collectors.toList());
+
+            dto.setDetalleRecetas(detalleRecetasDto);
+
+            return dto;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ExceptionNotFoundException(e.getMessage());
+        }
+    }
+
+
+    @Transactional
+    @Override
     public Receta updateById(Long recetaId, RecetaRequesDto recetaRequestDTO) throws ExceptionNotFoundException {
         try {
+            logger.info("Solicitud a modificar: {}", recetaRequestDTO);
+
+            // Buscar la receta existente
+            Receta receta = recetaRepository.findById(recetaId)
+                    .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + recetaId));
+
+            // Actualizar los datos básicos de la receta
+            receta.setName(recetaRequestDTO.getName());
+            receta.setStatus(recetaRequestDTO.getStatus());
+
+            // Lista actual de DetalleRecetas en la base de datos
+            List<DetalleRecetas> detalleRecetasActuales = receta.getDetalleRecetas();
+
+            // Lista de IDs de bases que vienen en la solicitud
+            Set<Long> nuevosIds = recetaRequestDTO.getDetalleRecetas().stream()
+                    .map(DetalleRecetasRequestDto::getBaseId)
+                    .collect(Collectors.toSet());
+
+            // **1️⃣ Eliminar bases que ya no están en la solicitud**
+            detalleRecetasActuales.removeIf(detalle -> !nuevosIds.contains(detalle.getBase().getId()));
+
+            // **2️⃣ Agregar nuevas bases si no existen**
+            for (DetalleRecetasRequestDto detalleDto : recetaRequestDTO.getDetalleRecetas()) {
+                Long baseId = detalleDto.getBaseId();
+                Base base = baseRepository.findById(baseId)
+                        .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_BASE_WITH_ID + baseId));
+
+                // Verificar si la base ya está en la receta
+                boolean existe = detalleRecetasActuales.stream()
+                        .anyMatch(detalle -> detalle.getBase().getId().equals(baseId));
+
+                // Agregar solo si no existe
+                if (!existe) {
+                    DetalleRecetas nuevoDetalle = new DetalleRecetas();
+                    nuevoDetalle.setReceta(receta);
+                    nuevoDetalle.setBase(base);
+                    detalleRecetasActuales.add(nuevoDetalle);
+                }
+            }
+
+            // Actualizar la receta con la nueva lista de DetalleRecetas
+            receta.setDetalleRecetas(detalleRecetasActuales);
+            Receta recetaActualizada = recetaRepository.save(receta);
+
+            logger.info("Receta modificada: {}", recetaActualizada);
+            return recetaActualizada;
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new ExceptionNotFoundException(e.getMessage());
+        }
+        /*try {
             logger.info("Solicitud a modificar: {}", recetaRequestDTO);
 
             // Buscar la receta existente
@@ -210,9 +260,10 @@ public class RecetaServiceImpl implements IRecetaService {
         } catch (Exception e) {
             logger.error(e.getMessage());
             throw new ExceptionNotFoundException(e.getMessage());
-        }
+        }*/
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {
@@ -225,5 +276,39 @@ public class RecetaServiceImpl implements IRecetaService {
             logger.error(e.getMessage());
             throw new ExceptionNotFoundException(e.getMessage());
         }
+
     }
+
+    /*private RecetaResponseDto convertirRecetaADto(Receta receta) {
+        RecetaResponseDto dto = new RecetaResponseDto();
+        dto.setId(receta.getId());
+        dto.setName(receta.getName());
+        dto.setStatus(receta.getStatus());
+        // Convertir detalles de receta a DTO usando el método privado
+        dto.setDetalleRecetas(convertirDetallesRecetaADto(receta.getDetalleRecetas()));
+
+        return dto;
+    }
+
+    private List<DetalleRecetaResponseDto> convertirDetallesRecetaADto(List<DetalleRecetas> detallesRecetas) {
+        return detallesRecetas.stream().map(detalle -> {
+            DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
+            detalleDto.setId(detalle.getId());
+            detalleDto.setBaseId(detalle.getBase().getId());
+            detalleDto.setNombre_base(detalle.getBase().getName());
+            List<DetalleBaseResponseDto> detalleBaseResponseDtos = detalleDto.getDetalleBases().stream().map(bstDTO ->{
+                Ingrediente ingrediente = ingredienteRepository.findById(bstDTO.getIngredienteId())
+                        .orElseThrow(()-> new ExceptionNotFoundException(ReplyMessage.MESSAGE_INGREDIENT_WITH_ID + bstDTO.getIngredienteId()));
+                DetalleBaseResponseDto responseDto = new DetalleBaseResponseDto();
+                responseDto.setId(bstDTO.getId());
+                responseDto.setIngredienteId(ingrediente.getId());
+                responseDto.setNombre_ingrediente(ingrediente.getName());
+                responseDto.setCantidad(bstDTO.getCantidad());
+                responseDto.setUnidad(bstDTO.getUnidad());
+                return  responseDto;
+            }).collect(Collectors.toList());
+            detalleDto.setDetalleBases(detalleBaseResponseDtos);
+            return detalleDto;
+        }).collect(Collectors.toList());
+    }*/
 }

@@ -1,16 +1,17 @@
 package santa_cruz_alimento_backend.service.implementation;
 
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.RolRequestDto;
+import santa_cruz_alimento_backend.dto.request.rol.RolRequestDto;
 import santa_cruz_alimento_backend.entity.model.Rol;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IRolRepository;
 import santa_cruz_alimento_backend.service.interfaces.IRolService;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
+import santa_cruz_alimento_backend.util.constant.ReplyStatus;
 import santa_cruz_alimento_backend.util.message.ReplyMessage;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class RolServiceImpl implements IRolService {
 
     private static final Logger logger = LoggerFactory.getLogger(RolServiceImpl.class);
 
+    @Transactional
     @Override
     public Rol saveRol(RolRequestDto requestDto) throws ExceptionNotFoundException {
         try {
@@ -53,6 +55,7 @@ public class RolServiceImpl implements IRolService {
         }
     }
 
+    @Transactional
     @Override
     public Rol updateByRolId(Long id, RolRequestDto rol) throws ExceptionNotFoundException {
         try {
@@ -76,7 +79,11 @@ public class RolServiceImpl implements IRolService {
     @Override
     public List<Rol> findAllRol() throws ExceptionNotFoundException {
         try {
-            return rolRepository.findAll();
+            List<Rol> list = rolRepository.findAll();
+            if (list.isEmpty()) {
+                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_LIST_EMPTY);
+            }
+            return list;
         }catch ( Exception e){
             logger.error(e.getMessage());
             throw new ExceptionNotFoundException(e.getMessage());
@@ -84,6 +91,7 @@ public class RolServiceImpl implements IRolService {
 
     }
 
+    @Transactional
     @Override
     public void deleteByRolId(Long id) throws ExceptionNotFoundException {
         try {

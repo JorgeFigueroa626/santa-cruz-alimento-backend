@@ -19,14 +19,17 @@ public class FirebaseStorageService implements IFirebaseStorageService {
     @Value("${firebase.storage.file.path.base}")
     private String FIREBASE_STORAGE;
 
-    // private static final String BUCKET_NAME = "web-ecommerce-dcdaa.appspot.com";
+    public static String convertirString(String text) {
+        return text.toLowerCase().replace(" ", "_");
+    }
+
     @Override
     public String uploadImage(String container, MultipartFile file) throws IOException {
 
         Bucket bucket = StorageClient.getInstance().bucket(FIREBASE_STORAGE);
 
         // Genera name unico para la image
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        String fileName = System.currentTimeMillis() + "_" + convertirString(file.getOriginalFilename());
         //String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
 
         // Subir image al bucker o Url

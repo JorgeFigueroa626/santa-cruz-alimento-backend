@@ -1,20 +1,21 @@
 package santa_cruz_alimento_backend.service.implementation;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
-import santa_cruz_alimento_backend.dto.request.UserRequestDto;
-import santa_cruz_alimento_backend.dto.response.UserResponseDto;
+import santa_cruz_alimento_backend.dto.request.auth.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.request.user.UserRequestDto;
+import santa_cruz_alimento_backend.dto.response.user.UserResponseDto;
 import santa_cruz_alimento_backend.entity.model.Rol;
 import santa_cruz_alimento_backend.entity.model.Usuario;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IRolRepository;
 import santa_cruz_alimento_backend.repository.IUserRepository;
 import santa_cruz_alimento_backend.service.interfaces.IUserService;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
+import santa_cruz_alimento_backend.util.constant.ReplyStatus;
 import santa_cruz_alimento_backend.util.message.ReplyMessage;
 
 import java.util.List;
@@ -51,6 +52,7 @@ public class UserServiceImpl implements IUserService {
     }*/
 
 
+    @Transactional
     @Override
     public UserRequestDto createUser(SignupRequestDto requestDto) throws ExceptionNotFoundException {
         try {
@@ -115,6 +117,7 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Transactional
     @Override
     public boolean updateByUserId(Long id, SignupRequestDto requestDto) throws ExceptionNotFoundException, Exception {
         try {
@@ -147,6 +150,7 @@ public class UserServiceImpl implements IUserService {
         }
     }
 
+    @Transactional
     @Override
     public void deleteById(Long id) throws ExceptionNotFoundException {
         try {

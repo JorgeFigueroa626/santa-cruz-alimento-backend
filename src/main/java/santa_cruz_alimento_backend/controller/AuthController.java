@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import santa_cruz_alimento_backend.dto.base.BaseResponse;
-import santa_cruz_alimento_backend.dto.request.AuthRequestDto;
-import santa_cruz_alimento_backend.dto.response.AuthResponseDto;
-import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
-import santa_cruz_alimento_backend.dto.request.UserRequestDto;
+import santa_cruz_alimento_backend.dto.request.auth.AuthRequestDto;
+import santa_cruz_alimento_backend.dto.response.auth.AuthResponseDto;
+import santa_cruz_alimento_backend.dto.request.auth.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.request.user.UserRequestDto;
 import santa_cruz_alimento_backend.entity.model.Usuario;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 import santa_cruz_alimento_backend.repository.IUserRepository;
@@ -24,9 +24,9 @@ import santa_cruz_alimento_backend.security.UserDetailsServiceImpl;
 import santa_cruz_alimento_backend.service.interfaces.IUserService;
 import santa_cruz_alimento_backend.util.message.ReplyMessage;
 
-import java.util.Optional;
+import static santa_cruz_alimento_backend.util.constant.ConstantEntity.*;
 
-import static santa_cruz_alimento_backend.constante.ConstantEntity.*;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(AUTH)

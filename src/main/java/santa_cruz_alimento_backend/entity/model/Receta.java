@@ -3,7 +3,6 @@ package santa_cruz_alimento_backend.entity.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,5 +24,12 @@ public class Receta {
     @JsonManagedReference // Evita el ciclo al serializar
     private List<DetalleRecetas> detalleRecetas = new ArrayList<>();
 
-
+    @Override
+    public String toString() {
+        return "Receta{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

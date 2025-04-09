@@ -25,4 +25,16 @@ public class DetalleCompra {
     @ManyToOne
     @JoinColumn(name = "ingrediente_id", referencedColumnName = "id", nullable = false)
     private Ingrediente ingrediente; // Relación con la entidad Ingrediente
+
+    @Override
+    public String toString() {
+        return "DetalleCompra{" +
+                "id=" + id +
+                ", cantidad=" + cantidad +
+                ", precio=" + precio +
+                ", total=" + total +
+                ", compra=" + compra +
+                ", ingrediente=" + ingrediente +
+                '}';
+    }
 }

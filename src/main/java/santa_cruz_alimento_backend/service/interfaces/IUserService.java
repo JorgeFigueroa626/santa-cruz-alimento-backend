@@ -1,9 +1,9 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.SignupRequestDto;
-import santa_cruz_alimento_backend.dto.request.UserRequestDto;
-import santa_cruz_alimento_backend.dto.response.UserResponseDto;
+import santa_cruz_alimento_backend.dto.request.auth.SignupRequestDto;
+import santa_cruz_alimento_backend.dto.request.user.UserRequestDto;
+import santa_cruz_alimento_backend.dto.response.user.UserResponseDto;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
 import java.util.List;

@@ -29,4 +29,16 @@ public class DetalleVenta {
     @ManyToOne
     @JoinColumn(name = "producto_id", referencedColumnName = "id", nullable = false)
     private Product producto;
+
+    @Override
+    public String toString() {
+        return "DetalleVenta{" +
+                "id=" + id +
+                ", cantidad=" + cantidad +
+                ", precioUnitario=" + precioUnitario +
+                ", subtotal=" + subtotal +
+                ", venta=" + venta +
+                ", producto=" + producto +
+                '}';
+    }
 }

@@ -3,7 +3,6 @@ package santa_cruz_alimento_backend.entity.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +28,21 @@ public class Ingrediente {
 
     @OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // ✅ Evita la serialización infinita
-    private List<DetalleCompra> detalleCompras= new ArrayList<>(); // Relación con la entidad DetalleCompra
+    private List<DetalleCompra> detalleCompras = new ArrayList<>(); // Relación con la entidad DetalleCompra
 
     @OneToMany(mappedBy = "ingrediente", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore // Marca este lado como el lado "dueño" de la relación
     private List<DetalleProduccion> detalleProduccions = new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "Ingrediente{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", cantidad=" + cantidad +
+                ", stock=" + stock +
+                ", unidad='" + unidad + '\'' +
+                ", status=" + status +
+                '}';
+    }
 }

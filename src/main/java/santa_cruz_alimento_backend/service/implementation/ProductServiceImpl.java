@@ -1,18 +1,21 @@
 package santa_cruz_alimento_backend.service.implementation;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.ProductoRequestDTO;
-import santa_cruz_alimento_backend.dto.response.*;
+import santa_cruz_alimento_backend.dto.request.product.ProductoRequestDTO;
+import santa_cruz_alimento_backend.dto.response.product.ProductoResponseDTO;
+import santa_cruz_alimento_backend.dto.response.recipe.DetalleRecetaResponseDto;
 import santa_cruz_alimento_backend.entity.model.*;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
+import santa_cruz_alimento_backend.mapper.IBaseMapper;
 import santa_cruz_alimento_backend.repository.*;
 import santa_cruz_alimento_backend.service.interfaces.IFirebaseStorageService;
 import santa_cruz_alimento_backend.service.interfaces.IProductService;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
-import santa_cruz_alimento_backend.util.container.Container;
+import santa_cruz_alimento_backend.util.constant.ReplyStatus;
+import santa_cruz_alimento_backend.util.constant.Container;
 import santa_cruz_alimento_backend.util.message.ReplyMessage;
 
 import java.util.List;
@@ -36,11 +39,12 @@ public class ProductServiceImpl implements IProductService {
     @Autowired
     private IFirebaseStorageService storageService;
 
-    /*@Autowired
-    private ISubProductRepository subProductRepository;*/
+    @Autowired
+    private IBaseMapper baseMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
+    @Transactional
     @Override
     public Product createProductos(ProductoRequestDTO requestDTO) throws ExceptionNotFoundException {
         try {
@@ -48,10 +52,12 @@ public class ProductServiceImpl implements IProductService {
 
             Product producto = new Product();
             producto.setName(requestDTO.getName());
+            producto.setTamaño(requestDTO.getTamaño());
 
             String imageUrl = storageService.uploadImage(Container.PRODUCTS, requestDTO.getImage());
             producto.setImage(imageUrl);
 
+            producto.setTamaño(requestDTO.getTamaño());
             producto.setDescription(requestDTO.getDescription());
             producto.setPrice(requestDTO.getPrice());
             producto.setStock(0);
@@ -59,32 +65,28 @@ public class ProductServiceImpl implements IProductService {
 
             if (requestDTO.getCategoryId() == null)
                 throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_REQUIRED + "categoria");
-
             Category category = categoryRepository.findById(requestDTO.getCategoryId())
                     .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_CATEGORY_WITH_ID + requestDTO.getCategoryId()));
+            if (category.getStatus()==0)
+                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_NOT_SUB_PRODUCT_STATUS + category.getName());
             producto.setCategory(category);
 
             if (requestDTO.getBusinessId() == null) {
                 throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_REQUIRED + "negocio");
             }
-
             Business business = businessRepository.findById(requestDTO.getBusinessId())
                     .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_BUSINESS_WITH_ID + requestDTO.getBusinessId()));
+            if (business.getStatus()==0)
+                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_NOT_BUSINESS_STATUS + business.getName());
             producto.setBusiness(business);
 
-            /*if (requestDTO.getSubproductId() == null)
-                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_REQUIRED + "sub product");
-
-            SubProduct subProduct = subProductRepository.findById(requestDTO.getSubproductId())
-                    .orElseThrow(() -> new ExceptionNotFoundException("Sub Producto no encontrada con el Id : " + requestDTO.getSubproductId()));
-            producto.setSubProduct(subProduct);*/
 
             if (requestDTO.getRecetaId() == null)
                 throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_REQUIRED + "receta");
-
             Receta receta = recetaRepository.findById(requestDTO.getRecetaId())
                     .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + requestDTO.getRecetaId()));
-
+            if (receta.getStatus() ==0)
+                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_NOT_RECIPE_STATUS + receta.getName());
             producto.setReceta(receta);
 
             Product save =  productRepository.save(producto);
@@ -102,57 +104,10 @@ public class ProductServiceImpl implements IProductService {
     public List<ProductoResponseDTO> findAllProduct() throws ExceptionNotFoundException {
         try {
             List<Product> products = productRepository.findAll();
-
-            return products.stream().map(product -> {
-                ProductoResponseDTO responseDTO = new ProductoResponseDTO();
-                responseDTO.setId(product.getId());
-                responseDTO.setName(product.getName());
-                responseDTO.setImage_url(product.getImage());
-                responseDTO.setDescription(product.getDescription());
-                responseDTO.setPrice(product.getPrice());
-                responseDTO.setStock(product.getStock());
-                responseDTO.setStatus(product.getStatus());
-
-                responseDTO.setCategoryId(product.getCategory().getId());
-                responseDTO.setCategory_name(product.getCategory().getName());
-
-                /*SubProduct category = subProductRepository.findById(product.getSubProduct().getId()).orElseThrow(() -> new ExceptionNotFoundException("Categoria no encontrado con id: " + product.getCategory().getId()));
-                List<DetalleBaseResponseDto> responseDtoList = category.getDetalleBase().stream().map(iDto->{
-                    DetalleBaseResponseDto dto = new DetalleBaseResponseDto();
-                    dto.setId(iDto.getId());
-                    dto.setIngredienteId(iDto.getIngrediente().getId());
-                    dto.setNombre_ingrediente(iDto.getIngrediente().getName());
-                    dto.setCantidad(iDto.getCantidad());
-                    dto.setUnidad(iDto.getUnidad());
-                    return dto;
-                }).collect(Collectors.toList());
-
-                responseDTO.setSubproductId(product.getSubProduct().getId());
-                responseDTO.setSubproduct_name(product.getSubProduct().getName());
-                responseDTO.setDetallesBases(responseDtoList);*/
-
-                responseDTO.setBusinessId(product.getBusiness().getId());
-                responseDTO.setBusiness_name(product.getBusiness().getName());
-
-                Receta receta = recetaRepository.findById(product.getReceta().getId())
-                        .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + product.getReceta().getId()));
-                // Convertir detalles de recera a DTO
-                List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
-                    DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
-                    detalleDto.setId(detalle.getId());
-                    detalleDto.setIngredienteId(detalle.getIngrediente().getId());
-                    detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
-                    detalleDto.setCantidad(detalle.getCantidad());
-                    detalleDto.setUnidad(detalle.getUnidad());
-                    return detalleDto;
-                }).collect(Collectors.toList());
-
-                responseDTO.setRecetaId(receta.getId());
-                responseDTO.setReceta_name(receta.getName());
-                responseDTO.setDetalleReceta(detallesDto);
-
-                return responseDTO;
-            }).collect(Collectors.toList());
+            if (products.isEmpty()) {
+                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_LIST_EMPTY);
+            }
+            return products.stream().map(this::convertproductoResponseDTO).collect(Collectors.toList());
 
         }catch (Exception e){
             logger.info(e.getMessage());
@@ -161,9 +116,9 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public List<ProductoResponseDTO> getProduct() throws ExceptionNotFoundException {
+    public List<ProductoResponseDTO> getAllProduct() throws ExceptionNotFoundException {
         try {
-            return productRepository.findAll().stream().map(Product::productoDto).collect(Collectors.toList());
+            return productRepository.findAll().stream().map(this::convertproductoResponseDTO).collect(Collectors.toList());
         }catch (Exception e){
             logger.error(e.getMessage());
             throw new ExceptionNotFoundException(e.getMessage());
@@ -186,52 +141,7 @@ public class ProductServiceImpl implements IProductService {
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_PRODUCT_WITH_ID + productId));
 
-            ProductoResponseDTO responseDTO = new ProductoResponseDTO();
-            responseDTO.setId(product.getId());
-            responseDTO.setName(product.getName());
-            responseDTO.setImage_url(product.getImage());
-            responseDTO.setDescription(product.getDescription());
-            responseDTO.setPrice(product.getPrice());
-            responseDTO.setStock(product.getStock());
-            responseDTO.setStatus(product.getStatus());
-
-            responseDTO.setCategoryId(product.getCategory().getId());
-            responseDTO.setCategory_name(product.getCategory().getName());
-
-            /*SubProduct category = subProductRepository.findById(product.getSubProduct().getId()).orElseThrow(() -> new ExceptionNotFoundException("Categoria no encontrado con id: " + product.getCategory().getId()));
-            List<DetalleBaseResponseDto> responseDtoList = category.getDetalleBase().stream().map(iDto->{
-                DetalleBaseResponseDto dto = new DetalleBaseResponseDto();
-                dto.setId(iDto.getId());
-                dto.setIngredienteId(iDto.getIngrediente().getId());
-                dto.setNombre_ingrediente(iDto.getIngrediente().getName());
-                dto.setCantidad(iDto.getCantidad());
-                dto.setUnidad(iDto.getUnidad());
-                return dto;
-            }).collect(Collectors.toList());
-
-            responseDTO.setSubproductId(product.getSubProduct().getId());
-            responseDTO.setSubproduct_name(product.getSubProduct().getName());
-            responseDTO.setDetallesBases(responseDtoList);*/
-
-            responseDTO.setBusinessId(product.getBusiness().getId());
-            responseDTO.setBusiness_name(product.getBusiness().getName());
-
-            Receta receta = recetaRepository.findById(product.getReceta().getId())
-                    .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + product.getReceta().getId()));
-            // Convertir detalles de recera a DTO
-            List<DetalleRecetaResponseDto> detallesDto = receta.getDetalleRecetas().stream().map(detalle -> {
-                DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
-                detalleDto.setId(detalle.getId());
-                detalleDto.setIngredienteId(detalle.getIngrediente().getId());
-                detalleDto.setNombre_ingrediente(detalle.getIngrediente().getName());
-                detalleDto.setCantidad(detalle.getCantidad());
-                detalleDto.setUnidad(detalle.getUnidad());
-                return detalleDto;
-            }).collect(Collectors.toList());
-
-            responseDTO.setRecetaId(receta.getId());
-            responseDTO.setReceta_name(receta.getName());
-            responseDTO.setDetalleReceta(detallesDto);
+            ProductoResponseDTO responseDTO = convertproductoResponseDTO(product);
 
             return responseDTO;
 
@@ -242,6 +152,7 @@ public class ProductServiceImpl implements IProductService {
         }
     }
 
+    @Transactional
     @Override
     public Product updateProduct(Long productId, ProductoRequestDTO productDto) throws ExceptionNotFoundException {
         try {
@@ -258,17 +169,13 @@ public class ProductServiceImpl implements IProductService {
             Business optionalBusiness = businessRepository.findById(productDto.getBusinessId())
                     .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_BUSINESS_WITH_ID + productDto.getBusinessId()));
 
-            /*if (productDto.getSubproductId() == null)
-                throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_REQUIRED + "sub product");
-            SubProduct subProduct = subProductRepository.findById(productDto.getSubproductId())
-                    .orElseThrow(() -> new ExceptionNotFoundException("Sub Producto no encontrada con el Id : " + productDto.getSubproductId()));*/
-
             if (productDto.getRecetaId() == null)
                 throw new ExceptionNotFoundException(ReplyMessage.MESSAGE_REQUIRED + "receta");
             Receta optionalReceta = recetaRepository.findById(productDto.getRecetaId())
                     .orElseThrow(() -> new ExceptionNotFoundException(ReplyMessage.MESSAGE_RECIPE_WITH_ID + productDto.getRecetaId()));
 
             optionalProduct.setName(productDto.getName());
+            optionalProduct.setTamaño(productDto.getTamaño());
 
             // Verificar si hay una nueva imagen
             if (productDto.getImage() != null && !productDto.getImage().isEmpty()) {
@@ -281,7 +188,6 @@ public class ProductServiceImpl implements IProductService {
             optionalProduct.setStock(productDto.getStock());
             optionalProduct.setStatus(productDto.getStatus());
             optionalProduct.setCategory(optionalCategory);
-            //optionalProduct.setSubProduct(subProduct);
             optionalProduct.setBusiness(optionalBusiness);
             optionalProduct.setReceta(optionalReceta);
 
@@ -295,6 +201,7 @@ public class ProductServiceImpl implements IProductService {
         }
     }
 
+    @Transactional
     @Override
     public boolean deleteByProductId(Long id) throws ExceptionNotFoundException{
         try {
@@ -310,4 +217,41 @@ public class ProductServiceImpl implements IProductService {
 
         }
     }
+
+    private ProductoResponseDTO convertproductoResponseDTO(Product product){
+        ProductoResponseDTO responseDTO = new ProductoResponseDTO();
+        responseDTO.setId(product.getId());
+        responseDTO.setName(product.getName());
+        responseDTO.setTamaño(product.getTamaño());
+        responseDTO.setImage_url(product.getImage());
+        responseDTO.setDescription(product.getDescription());
+        responseDTO.setPrice(product.getPrice());
+        responseDTO.setStock(product.getStock());
+        responseDTO.setStatus(product.getStatus());
+
+        responseDTO.setCategoryId(product.getCategory().getId());
+        responseDTO.setCategory_name(product.getCategory().getName());
+
+        responseDTO.setBusinessId(product.getBusiness().getId());
+        responseDTO.setBusiness_name(product.getBusiness().getName());
+
+        responseDTO.setRecetaId(product.getReceta().getId());
+        responseDTO.setReceta_name(product.getReceta().getName());
+        responseDTO.setDetalleReceta(convertirDetallesRecetaADto(product.getReceta().getDetalleRecetas()));
+
+        return responseDTO;
+    }
+
+    private List<DetalleRecetaResponseDto> convertirDetallesRecetaADto(List<DetalleRecetas> detallesRecetas) {
+        return detallesRecetas.stream().map(detalle -> {
+            DetalleRecetaResponseDto detalleDto = new DetalleRecetaResponseDto();
+            detalleDto.setId(detalle.getId());
+            detalleDto.setBaseId(detalle.getBase().getId());
+            detalleDto.setNombre_base(detalle.getBase().getName());
+            detalleDto.setDescription_base(detalle.getBase().getDescription());
+            detalleDto.setDetalleBases(baseMapper.toDetailBaseResponseDtoList(detalle.getBase().getDetalleBases()));
+            return detalleDto;
+        }).collect(Collectors.toList());
+    }
+
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import santa_cruz_alimento_backend.util.enums.ReplyStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +24,21 @@ public class Category {
 
     private Integer status;
 
-    /*@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference // Evita el ciclo al serializar
-    private List<DetalleBase> detalleBase = new ArrayList<>();*/
+    private Integer unidad;
 
+    private Integer stock;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference // Evita el ciclo al serializar
+    private List<DetalleSubProducto> detalleSubProductos = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", stock=" + stock +
+                '}';
+    }
 }

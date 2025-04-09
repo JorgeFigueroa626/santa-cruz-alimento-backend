@@ -1,9 +1,8 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.VentaRequesDto;
-import santa_cruz_alimento_backend.dto.response.VentaResponseDto;
-import santa_cruz_alimento_backend.dto.response.VentaUserResponseDto;
+import santa_cruz_alimento_backend.dto.request.sale.VentaRequesDto;
+import santa_cruz_alimento_backend.dto.response.sale.VentaResponseDto;
 import santa_cruz_alimento_backend.entity.model.Venta;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 
@@ -18,5 +17,5 @@ public interface IVentaService {
 
     List<VentaResponseDto> findAll() throws ExceptionNotFoundException;
 
-    List<VentaUserResponseDto> findAllVentasByUsuarioId(Long userId) throws ExceptionNotFoundException;
+    List<VentaResponseDto> findAllVentasByUsuarioId(Long userId) throws ExceptionNotFoundException;
 }

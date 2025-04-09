@@ -1,7 +1,7 @@
 package santa_cruz_alimento_backend.service.interfaces;
 
 import org.springframework.stereotype.Service;
-import santa_cruz_alimento_backend.dto.request.RolRequestDto;
+import santa_cruz_alimento_backend.dto.request.rol.RolRequestDto;
 import santa_cruz_alimento_backend.entity.model.Rol;
 import santa_cruz_alimento_backend.exception.ExceptionNotFoundException;
 

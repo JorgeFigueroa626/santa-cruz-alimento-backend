@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import santa_cruz_alimento_backend.dto.response.ProduccionResponseDTO;
+import santa_cruz_alimento_backend.util.constant.ReplyProduction;
 
 
 import java.sql.Timestamp;
@@ -22,7 +22,7 @@ public class Produccion {
 
     private Double solicitud_produccion;
 
-    private Integer producido;
+    private Double producido;
 
     private String comentario;
 
@@ -30,12 +30,18 @@ public class Produccion {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/La_Paz")
     private Timestamp fechaProduccion;
 
+    @Enumerated(EnumType.STRING)
+    private ReplyProduction status;
+
+    private String nombre_sub_producto;
+    private Integer cantidad_sub_producto;
+
     @ManyToOne
     @JoinColumn(name = "producto_id", nullable = false)
     @JsonIgnore  // Evita la serialización infinita
     private Product producto;
 
-    @OneToMany(mappedBy = "produccion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "produccion", cascade = CascadeType.ALL)
     @JsonManagedReference // Marca este lado como el lado "dueño" de la relación
     private List<DetalleProduccion> detalleProduccions = new ArrayList<>();
 

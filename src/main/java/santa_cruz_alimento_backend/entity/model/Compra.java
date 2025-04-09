@@ -26,4 +26,13 @@ public class Compra {
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Evita el ciclo al serializar
     private List<DetalleCompra> detalleCompras; // Relación con la entidad DetalleCompra
+
+    @Override
+    public String toString() {
+        return "Compra{" +
+                "id=" + id +
+                ", fechaCompra=" + fechaCompra +
+                ", total=" + total +
+                '}';
+    }
 }
